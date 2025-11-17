@@ -1,0 +1,7 @@
+[project]
+name = "ccc"
+version = "0.1.0"
+description = "Program to help with recall and Phrases"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
