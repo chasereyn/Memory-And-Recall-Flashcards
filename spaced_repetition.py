@@ -191,16 +191,18 @@ def prioritize_cards(active_cards: List[Flashcard], due_cards: List[Flashcard]) 
 def reset_daily_flags(cards: List[Flashcard], last_session_date: Optional[str], today: Optional[str] = None) -> None:
     """
     Reset daily flags if it's a new day.
-    If last_session_date != today, reset completed_today flags and session fields.
+    If last_session_date != today, reset completed_today flags and session fields for all cards.
     """
     if today is None:
         today = get_today()
     
     if last_session_date != today:
         for card in cards:
+            # Reset completed_today for all cards that were completed
             if card.completed_today:
                 card.completed_today = False
-                card.reset_session()
+            # Reset session fields for ALL cards (new day = fresh start)
+            card.reset_session()
 
 
 def get_cards_for_review(cards: List[Flashcard], today: Optional[str] = None) -> List[Flashcard]:
