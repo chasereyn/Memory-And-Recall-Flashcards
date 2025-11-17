@@ -142,18 +142,18 @@ def review_session(cards, filepath):
         else:
             print(f"\nCard will be shown again (attempt {current_card.session_attempts}).")
         
-        # Remove current card from queue (we'll re-insert it based on rating)
-        review_cards = [c for c in review_cards if c.id != current_card.id]
-        
         # Handle card re-insertion based on rating
         if rating == 1 and not current_card.completed_today:
-            # Rating 1: Show immediately (insert at front)
+            # Rating 1: Show immediately (move to front)
+            # Remove from current position and insert at front
+            review_cards = [c for c in review_cards if c.id != current_card.id]
             review_cards.insert(0, current_card)
         elif rating in [2, 3] and not current_card.completed_today:
             # Rating 2/3: Insert somewhere in the middle/back of the queue
-            # Don't re-sort, just insert at a random position after the first few cards
+            # Remove from current position first
+            review_cards = [c for c in review_cards if c.id != current_card.id]
+            # Insert at random position in middle/back portion (skip first 1-3 cards)
             if len(review_cards) > 0:
-                # Insert at random position in middle/back portion (skip first 1-3 cards)
                 min_pos = min(3, len(review_cards))
                 max_pos = len(review_cards)
                 insert_pos = random.randint(min_pos, max_pos)
@@ -162,14 +162,11 @@ def review_session(cards, filepath):
                 # If queue is empty, just add it
                 review_cards.append(current_card)
         elif current_card.completed_today:
-            # Rating 4: Card is completed, don't re-insert
-            # Refresh queue to get updated priorities for remaining cards
-            review_cards = get_cards_for_review(cards, today)
-            # Make sure completed card is not in the list
+            # Rating 4: Card is completed, remove from queue
+            # Simply remove it - no need to refresh entire queue
             review_cards = [c for c in review_cards if c.id != current_card.id]
         else:
-            # Fallback: refresh queue normally
-            review_cards = get_cards_for_review(cards, today)
+            # Fallback: remove card (shouldn't happen, but be safe)
             review_cards = [c for c in review_cards if c.id != current_card.id]
         
         print()
