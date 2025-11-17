@@ -6,9 +6,6 @@ from spaced_repetition import (
     get_cards_for_review,
     reset_daily_flags,
     get_today,
-    get_active_cards,
-    get_due_cards,
-    prioritize_cards
 )
 import random
 
