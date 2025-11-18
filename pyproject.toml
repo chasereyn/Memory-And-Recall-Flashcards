@@ -1,7 +1,0 @@
-[project]
-name = "ccc"
-version = "0.1.0"
-description = "Program to help with Recall and Memory"
-readme = "README.md"
-requires-python = ">=3.11"
-dependencies = []

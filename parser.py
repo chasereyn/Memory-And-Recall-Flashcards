@@ -1,12 +1,14 @@
 import hashlib
-from typing import List, Dict
+from typing import Dict, List
 from flashcard import Flashcard
 
 
-def parse_memory_file(filepath: str = "memory.txt") -> List[Flashcard]:
+def parse_markdown_file(filepath: str) -> List[Flashcard]:
     """
-    Parse memory.txt file and create Flashcard objects.
+    Parse markdown file and create Flashcard objects.
     Pairs consecutive non-empty lines as term/definition.
+    No deck headers - just term/definition pairs.
+    Returns a list of flashcards.
     """
     flashcards = []
     
@@ -50,52 +52,10 @@ def parse_memory_file(filepath: str = "memory.txt") -> List[Flashcard]:
     
     except FileNotFoundError:
         print(f"Warning: {filepath} not found.")
+        return []
     except Exception as e:
         print(f"Error parsing {filepath}: {e}")
+        return []
     
     return flashcards
-
-
-def parse_recall_file(filepath: str = "recall.txt") -> Dict[str, List[Flashcard]]:
-    """
-    Parse recall.txt file and create Flashcard objects for each deck.
-    Returns a dictionary with deck names as keys and lists of flashcards as values.
-    """
-    decks = {}
-    current_deck = None
-    
-    try:
-        with open(filepath, 'r', encoding='utf-8') as f:
-            lines = [line.strip() for line in f.readlines()]
-        
-        for line in lines:
-            # Check if line is a deck header
-            if line.startswith('[') and line.endswith(']'):
-                deck_name = line[1:-1]  # Remove brackets
-                current_deck = deck_name
-                decks[current_deck] = []
-                continue
-            
-            # Skip blank lines
-            if not line or not current_deck:
-                continue
-            
-            # Create flashcard with number as term and phrase as definition
-            # Number is based on position in the deck (1-indexed)
-            phrase_number = len(decks[current_deck]) + 1
-            card_id = f"{current_deck.lower()}_{phrase_number}"
-            
-            flashcard = Flashcard(
-                id=card_id,
-                term=str(phrase_number),
-                definition=line
-            )
-            decks[current_deck].append(flashcard)
-    
-    except FileNotFoundError:
-        print(f"Warning: {filepath} not found.")
-    except Exception as e:
-        print(f"Error parsing {filepath}: {e}")
-    
-    return decks
 

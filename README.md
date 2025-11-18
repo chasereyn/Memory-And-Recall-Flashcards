@@ -1,23 +1,66 @@
-# CCC - Spanish Learning Flashcard Program
+# CCC - Flashcard Learning System
 
-A spaced repetition flashcard system designed to help you learn Spanish vocabulary and practice active recall of phrases.
-
-## Features
-
-- **Memory Mode**: Learn English ↔ Spanish word pairs with spaced repetition
-- **Recall Mode**: Practice numbered phrases to expand active vocabulary
-- **Smart Algorithm**: Session-based spaced repetition that adapts to your performance
-- **Persistent Storage**: All progress saved automatically across sessions
+A spaced repetition flashcard system with automatic syncing and a unique session-based algorithm designed for effective vocabulary learning.
 
 ## Quick Start
 
-1. Add your vocabulary to `memory.txt` (term/definition pairs, one per line)
-2. Add phrases to `recall.txt` (organized by deck: `[Spanish]` or `[English]`)
-3. Run the program:
+1. **Add your vocabulary**: Create markdown files (`.md`) in the `data/` directory. Each file represents a deck. Format: term and definition on consecutive lines:
+   ```
+   Roof
+   Tejado
+   
+   Step aside!
+   Golpe avisa!
+   ```
+
+2. **Run the program**:
    ```bash
    python main.py
    ```
-4. Select a mode and start reviewing!
+
+3. **Select a deck** and start reviewing!
+
+That's it! No setup required—just add your vocabulary and run the program.
+
+## Features
+
+### Automatic Syncing
+
+The system automatically syncs your markdown files with JSON storage on startup. It:
+- **Preserves** cards that exist in both (keeps your progress and review history)
+- **Adds** new cards from markdown files
+- **Removes** cards that you've deleted from markdown files
+
+Your review progress is never lost—only the source content (markdown) is synced, while all learning metadata stays intact.
+
+### Unique Session-Based Algorithm
+
+Unlike traditional spaced repetition algorithms (like Anki's SM-2), this system uses a **session-based approach** with several key differences:
+
+**1. First Impression Matters**
+- Your **first rating** in each session determines the difficulty adjustment, not your final rating
+- If you struggle initially (rate 1-3) but eventually master it (rate 4), the algorithm still recognizes the initial difficulty
+- This prevents easy cards from being scheduled too far out if you just had a momentary lapse
+
+**2. Session Completion Required**
+- Cards rated 1-3 stay in the current session until you rate them 4 (Easy)
+- You can't move on until you've truly mastered the card in that session
+- This ensures active recall rather than passive recognition
+
+**3. Exponential Backoff for Mastery**
+- Cards you consistently rate as Easy (4) get exponentially longer intervals
+- Each consecutive easy session multiplies the interval, allowing well-known cards to fade into the background
+- This prevents over-reviewing material you've already mastered
+
+**4. Smart Prioritization**
+- Cards you're actively struggling with (in-session) appear first
+- Within sessions, cards you've attempted more times get priority
+- This focuses your attention on what needs the most work
+
+**5. Adaptive Difficulty Tracking**
+- The system tracks your struggle history separately from interval calculations
+- Cards you've struggled with get more frequent reviews, even if intervals suggest otherwise
+- This ensures difficult material doesn't get forgotten
 
 ## Rating System
 
@@ -26,32 +69,24 @@ A spaced repetition flashcard system designed to help you learn Spanish vocabula
 - **3 = Medium**: Card shown again soon (stays in session)
 - **4 = Easy**: Card completed for session (removed from queue)
 
-Cards rated 1-3 will cycle until you rate them 4. The algorithm uses your **first rating** in each session to determine difficulty adjustments.
+Cards must be rated 4 to complete a session. Your first rating determines how the algorithm adjusts the card's difficulty and scheduling.
 
 ## File Structure
 
-- `main.py` - Main entry point and UI
-- `flashcard.py` - Flashcard data model
-- `parser.py` - Parses memory.txt and recall.txt files
-- `storage.py` - JSON persistence layer
-- `spaced_repetition.py` - Spaced repetition algorithm
-- `memory.txt` - English/Spanish vocabulary pairs
-- `recall.txt` - Numbered phrase decks
-- `data/` - JSON files storing flashcard metadata
+```
+data/
+  ├── spanish_vocab.md          # Your markdown decks
+  ├── english_jokes.md
+  └── decks/
+      ├── spanish_vocab.json    # Auto-generated (don't edit)
+      └── english_jokes.json
+```
 
-## How It Works
-
-The algorithm tracks your performance and adjusts review intervals:
-- **Struggling cards** (rated 1-2) appear more frequently
-- **Easy cards** (rated 4 immediately) use exponential backoff (appear less often over time)
-- **Session-based**: Cards must be rated 4 to complete a session
-- **First impression matters**: Your first rating in a session determines the difficulty adjustment
+Edit the markdown files to add or remove vocabulary. The JSON files are automatically managed by the sync system.
 
 ## Requirements
 
 - Python 3.11+
 
-## License
-
-Personal project for language learning.
+No dependencies required—uses only Python standard library.
 

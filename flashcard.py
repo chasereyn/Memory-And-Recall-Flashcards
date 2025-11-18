@@ -15,9 +15,8 @@ class Flashcard:
         ease_factor: float = 2.5,
         interval: int = 1,
         repetitions: int = 0,
-        difficulty: float = 0.3,
         review_count: int = 0,
-        struggle_count: int = 0,
+        difficulty: int = 0,
         completed_today: bool = False,
         first_rating_this_session: Optional[int] = None,
         session_attempts: int = 0,
@@ -31,9 +30,8 @@ class Flashcard:
         self.ease_factor = ease_factor
         self.interval = interval
         self.repetitions = repetitions
-        self.difficulty = difficulty
         self.review_count = review_count
-        self.struggle_count = struggle_count
+        self.difficulty = difficulty
         self.completed_today = completed_today
         self.first_rating_this_session = first_rating_this_session
         self.session_attempts = session_attempts
@@ -50,9 +48,8 @@ class Flashcard:
             "ease_factor": self.ease_factor,
             "interval": self.interval,
             "repetitions": self.repetitions,
-            "difficulty": self.difficulty,
             "review_count": self.review_count,
-            "struggle_count": self.struggle_count,
+            "difficulty": self.difficulty,
             "completed_today": self.completed_today,
             "first_rating_this_session": self.first_rating_this_session,
             "session_attempts": self.session_attempts,
@@ -71,9 +68,8 @@ class Flashcard:
             ease_factor=data.get("ease_factor", 2.5),
             interval=data.get("interval", 1),
             repetitions=data.get("repetitions", 0),
-            difficulty=data.get("difficulty", 0.3),
             review_count=data.get("review_count", 0),
-            struggle_count=data.get("struggle_count", 0),
+            difficulty=data.get("difficulty", 0),
             completed_today=data.get("completed_today", False),
             first_rating_this_session=data.get("first_rating_this_session"),
             session_attempts=data.get("session_attempts", 0),

@@ -78,7 +78,7 @@ def update_card_after_review(card: Flashcard, rating: int) -> None:
             # Very difficult - user struggled significantly
             card.ease_factor = max(MIN_EASE_FACTOR, card.ease_factor - EASE_FACTOR_DECREASE_HARD)
             card.interval = max(MIN_INTERVAL, card.interval // 2)
-            card.struggle_count += 2
+            card.difficulty += 2
             card.repetitions = 0
             card.consecutive_easy_sessions = 0
         
@@ -86,7 +86,7 @@ def update_card_after_review(card: Flashcard, rating: int) -> None:
             # Difficult - user had some trouble
             card.ease_factor = max(MIN_EASE_FACTOR, card.ease_factor - EASE_FACTOR_DECREASE_MEDIUM)
             card.interval = max(MIN_INTERVAL, int(card.interval * 0.7))
-            card.struggle_count += 1
+            card.difficulty += 1
             card.repetitions = max(0, card.repetitions - 1)
             card.consecutive_easy_sessions = 0
         
@@ -102,7 +102,7 @@ def update_card_after_review(card: Flashcard, rating: int) -> None:
             # Easy - user knew it immediately
             card.ease_factor = min(MAX_EASE_FACTOR, card.ease_factor + EASE_FACTOR_INCREASE)
             card.repetitions += 1
-            card.struggle_count = max(0, card.struggle_count - 1)
+            card.difficulty = max(0, card.difficulty - 1)
             
             # Apply exponential backoff for consecutive easy sessions
             card.consecutive_easy_sessions += 1
@@ -163,24 +163,24 @@ def prioritize_cards(active_cards: List[Flashcard], due_cards: List[Flashcard]) 
     
     Active cards sorted by:
     1. session_attempts (descending) - cards attempted more times first
-    2. struggle_count (descending) - struggling cards first
+    2. difficulty (descending) - struggling cards first
     
     Due cards sorted by:
-    1. struggle_count (descending) - struggling cards first
+    1. difficulty (descending) - struggling cards first
     2. next_review (ascending, None first) - oldest due dates first
     3. review_count (ascending) - new cards first
     """
     # Sort active cards
     active_sorted = sorted(
         active_cards,
-        key=lambda c: (c.session_attempts, c.struggle_count),
+        key=lambda c: (c.session_attempts, c.difficulty),
         reverse=True
     )
     
     # Sort due cards
     def due_sort_key(card: Flashcard):
         next_rev = card.next_review if card.next_review else "0000-01-01"  # None comes first
-        return (-card.struggle_count, next_rev, card.review_count)
+        return (-card.difficulty, next_rev, card.review_count)
     
     due_sorted = sorted(due_cards, key=due_sort_key)
     

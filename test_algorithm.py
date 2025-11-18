@@ -40,7 +40,7 @@ def test_rating_1_to_4_updates_metadata():
     assert card.completed_today == True, "Card should be completed"
     assert card.ease_factor < initial_ease, "Ease factor should decrease (was difficult)"
     assert card.interval < initial_interval, "Interval should decrease (was difficult)"
-    assert card.struggle_count > 0, "Struggle count should increase"
+    assert card.difficulty > 0, "Struggle count should increase"
     print("PASSED\n")
 
 
@@ -105,11 +105,11 @@ def test_multiple_ratings_before_4():
     assert card.first_rating_this_session == 1, "First rating should remain 1"
     assert card.session_attempts == 3
     
-    initial_struggle = card.struggle_count
+    initial_struggle = card.difficulty
     update_card_after_review(card, 4)  # Finally 4
     
     # Should be treated as difficult (based on first rating of 1)
-    assert card.struggle_count > initial_struggle, "Should increase struggle count"
+    assert card.difficulty > initial_struggle, "Should increase struggle count"
     assert card.ease_factor < 2.5, "Ease factor should decrease"
     print("PASSED\n")
 

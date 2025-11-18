@@ -1,6 +1,13 @@
 import os
-from parser import parse_memory_file, parse_recall_file
-from storage import load_cards, save_cards, merge_cards, ensure_data_directory, get_last_session_date
+from storage import (
+    load_cards, 
+    save_cards, 
+    ensure_data_directory, 
+    get_last_session_date,
+    sync_all_decks,
+    get_markdown_files,
+    get_deck_name_from_file
+)
 from spaced_repetition import (
     update_card_after_review,
     get_cards_for_review,
@@ -10,46 +17,16 @@ from spaced_repetition import (
 import random
 
 
-def initialize_memory_mode():
-    """Initialize memory mode: parse file, load existing cards, merge, and save."""
-    # Parse memory.txt
-    new_cards = parse_memory_file("memory.txt")
+def initialize(deck_name: str):
+    """Load cards for a specific deck from JSON file."""
+    json_path = f"data/decks/{deck_name}.json"
+    cards = load_cards(json_path)
     
-    # Load existing cards
-    filepath = "data/memory_cards.json"
-    existing_cards = load_cards(filepath)
-    
-    # Merge cards (preserves existing, appends new)
-    merged_cards = merge_cards(existing_cards, new_cards)
-    
-    # Save merged cards
-    save_cards(merged_cards, filepath)
-    
-    return merged_cards, filepath
-
-
-def initialize_recall_mode(deck_name: str):
-    """Initialize recall mode for a specific deck."""
-    # Parse recall.txt
-    decks = parse_recall_file("recall.txt")
-    
-    if deck_name not in decks:
-        print(f"Error: Deck '{deck_name}' not found in recall.txt")
+    if not cards:
+        print(f"Error: No cards found for deck '{deck_name}'")
         return [], None
     
-    new_cards = decks[deck_name]
-    
-    # Load existing cards for this deck
-    filepath = f"data/recall_{deck_name.lower()}_cards.json"
-    existing_cards = load_cards(filepath)
-    
-    # Merge cards (preserves existing numbering, appends new)
-    merged_cards = merge_cards(existing_cards, new_cards)
-    
-    # Save merged cards
-    save_cards(merged_cards, filepath)
-    
-    return merged_cards, filepath
+    return cards, json_path
 
 
 def get_user_rating() -> int:
@@ -185,88 +162,88 @@ def review_session(cards, filepath):
     print("=" * 50)
 
 
-def run_memory_mode():
-    """Run memory mode review session."""
-    print("\n" + "=" * 50)
-    print("Memory Mode")
-    print("=" * 50)
-    
-    cards, filepath = initialize_memory_mode()
-    print(f"Loaded {len(cards)} total cards")
-    
-    review_session(cards, filepath)
+def get_available_decks():
+    """Get list of available deck names from markdown files."""
+    markdown_files = get_markdown_files()
+    deck_names = [get_deck_name_from_file(f) for f in markdown_files]
+    return sorted(deck_names)
 
 
-def run_recall_mode():
-    """Run recall mode review session."""
-    print("\n" + "=" * 50)
-    print("Recall Mode")
-    print("=" * 50)
+def select_deck():
+    """Show deck selection menu and return selected deck name, or None if user wants to exit."""
+    # Get available decks from markdown files
+    deck_names = get_available_decks()
     
-    # Parse to see available decks
-    decks = parse_recall_file("recall.txt")
-    
-    if not decks:
-        print("No decks found in recall.txt")
-        return
+    if not deck_names:
+        print("No decks found. Add .md files to the data/ directory.")
+        return None
     
     # Show deck selection
     print("\nAvailable decks:")
-    deck_names = list(decks.keys())
     for i, deck_name in enumerate(deck_names, 1):
-        print(f"  {i}. {deck_name}")
+        # Load cards to get count
+        json_path = f"data/decks/{deck_name}.json"
+        cards = load_cards(json_path)
+        card_count = len(cards)
+        print(f"  {i}. {deck_name} ({card_count} cards)")
+    print(f"  {len(deck_names) + 1}. Exit")
     
     while True:
         try:
-            choice = input(f"\nSelect deck (1-{len(deck_names)}): ").strip()
+            choice = input(f"\nSelect deck (1-{len(deck_names) + 1}): ").strip()
             choice = int(choice)
             if 1 <= choice <= len(deck_names):
                 selected_deck = deck_names[choice - 1]
-                break
+                return selected_deck
+            elif choice == len(deck_names) + 1:
+                return None
             else:
-                print(f"Please enter a number between 1 and {len(deck_names)}.")
+                print(f"Please enter a number between 1 and {len(deck_names) + 1}.")
         except ValueError:
             print("Please enter a valid number.")
         except KeyboardInterrupt:
             print("\nExiting...")
-            return
+            return None
+
+
+def run():
+    """Run review session with deck selection."""
     
-    cards, filepath = initialize_recall_mode(selected_deck)
+    selected_deck = select_deck()
+    
+    if selected_deck is None:
+        return
+    
+    cards, filepath = initialize(selected_deck)
     
     if not cards:
         return
     
-    print(f"Loaded {len(cards)} cards from {selected_deck} deck")
+    print(f"\nLoaded {len(cards)} cards from {selected_deck} deck")
     
     review_session(cards, filepath)
 
 
 def main():
-    """Main entry point with mode selection."""
+    """Main entry point."""
     ensure_data_directory()
     
-    print("=" * 50)
-    print("Flashcard Program - Spanish Learning")
+    # Sync all decks from markdown files on startup
+    sync_all_decks()
+    
+    print("\n" + "=" * 50)
+    print("Flashcard Program")
     print("=" * 50)
     
     while True:
-        print("\nSelect mode:")
-        print("  1. Memory Mode (English <-> Spanish)")
-        print("  2. Recall Mode (Numbered phrases)")
-        print("  3. Exit")
+        run()
         
+        # Ask if user wants to continue or exit
         try:
-            choice = input("\nEnter choice (1-3): ").strip()
-            
-            if choice == "1":
-                run_memory_mode()
-            elif choice == "2":
-                run_recall_mode()
-            elif choice == "3":
+            continue_choice = input("\nReview another deck? (y/n): ").strip().lower()
+            if continue_choice in ['n', 'no', 'quit', 'exit']:
                 print("\nGoodbye!")
                 break
-            else:
-                print("Please enter 1, 2, or 3.")
         except KeyboardInterrupt:
             print("\n\nGoodbye!")
             break
@@ -274,6 +251,7 @@ def main():
             print(f"\nAn error occurred: {e}")
             import traceback
             traceback.print_exc()
+            break
 
 
 if __name__ == "__main__":
