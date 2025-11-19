@@ -207,21 +207,26 @@ def select_deck():
 
 
 def run():
-    """Run review session with deck selection."""
+    """Run review session with deck selection.
     
+    Returns:
+        True if should continue (show deck selection again), False if should exit
+    """
     selected_deck = select_deck()
     
     if selected_deck is None:
-        return
+        return False  # User selected Exit
     
     cards, filepath = initialize(selected_deck)
     
     if not cards:
-        return
+        return True  # Error loading cards, but continue to show deck selection
     
     print(f"\nLoaded {len(cards)} cards from {selected_deck} deck")
     
     review_session(cards, filepath)
+    
+    return True  # Review complete, show deck selection again
 
 
 def main():
@@ -236,14 +241,13 @@ def main():
     print("=" * 50)
     
     while True:
-        run()
-        
-        # Ask if user wants to continue or exit
         try:
-            continue_choice = input("\nReview another deck? (y/n): ").strip().lower()
-            if continue_choice in ['n', 'no', 'quit', 'exit']:
+            should_continue = run()
+            if not should_continue:
+                # User selected Exit from deck menu
                 print("\nGoodbye!")
                 break
+            # Otherwise, loop continues and shows deck selection again
         except KeyboardInterrupt:
             print("\n\nGoodbye!")
             break
