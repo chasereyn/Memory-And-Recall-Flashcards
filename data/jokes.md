@@ -63,3 +63,39 @@ Shocking. Positively shocking
 
 I don't think this reference is right
 They'll print anything these days
+
+Airports
+I love airports. You can eat a pizza and have a glass of wine at 7am in track pants and nobody cares
+
+Doing Nothing
+People say nothing is impossible, but I do nothing every day
+
+Dark / Night
+A day without sunsine is like, you know, night
+
+Deadlines
+I love deadlines. I love the whooshing sound they make as they go by
+
+YOLO
+You only live once, but if you do it right, once is enough
+
+Taxes
+I'll teach my kids about taxes by eating 38% of their ice cream
+
+Slow Internet
+Before you marry a person, you should first make them use a computer with slow internet to see who they really are
+
+Money can't make you happy
+Nah...they just don't know where to shop
+
+When are you coming back?
+If I'm not back in 5 minutes, just wait longer
+
+This is the best thing ever!
+Not all treasure is silver and gold, mate
+
+You should've went/done...
+If you were waiting for the opportune moment, that was it
+
+We were so close
+This will be the day you remember as the day we almost _____

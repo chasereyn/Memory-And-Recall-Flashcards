@@ -273,3 +273,27 @@ Estoy obligado a...
 
 Hoodie
 Sudadera
+
+Garlic
+Ajo
+
+Cumin
+Comino
+
+Lime Juice
+Jugo de Lima
+
+Orange Juice
+Jugo de Naranja
+
+Salt
+Sal
+
+Lime Wedge
+Rodaja de limón
+
+Half
+Medio
+
+Let me guess...
+Dejame adivinar...

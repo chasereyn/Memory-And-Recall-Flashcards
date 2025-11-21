@@ -178,14 +178,38 @@ def select_deck():
         print("No decks found. Add .md files to the data/ directory.")
         return None
     
-    # Show deck selection
-    print("\nAvailable decks:")
-    for i, deck_name in enumerate(deck_names, 1):
-        # Load cards to get count
+    # Get today's date for calculating due cards
+    today = get_today()
+    
+    # Calculate deck info (due cards and total cards)
+    deck_info = []
+    for deck_name in deck_names:
         json_path = f"data/decks/{deck_name}.json"
         cards = load_cards(json_path)
-        card_count = len(cards)
-        print(f"  {i}. {deck_name} ({card_count} cards)")
+        total_count = len(cards)
+        
+        # Get cards due for review
+        due_cards = get_cards_for_review(cards, today)
+        due_count = len(due_cards)
+        
+        deck_info.append({
+            'name': deck_name,
+            'due': due_count,
+            'total': total_count
+        })
+    
+    # Find max widths for formatting
+    max_name_len = max(len(info['name']) for info in deck_info) if deck_info else 0
+    max_due_digits = max(len(str(info['due'])) for info in deck_info) if deck_info else 0
+    max_total_digits = max(len(str(info['total'])) for info in deck_info) if deck_info else 0
+    
+    # Show deck selection with formatted columns
+    print("\nAvailable decks:")
+    for i, info in enumerate(deck_info, 1):
+        name_padding = ' ' * (max_name_len - len(info['name']))
+        due_padding = ' ' * (max_due_digits - len(str(info['due'])))
+        total_padding = ' ' * (max_total_digits - len(str(info['total'])))
+        print(f"  {i}. {info['name']}{name_padding}    Due: {due_padding}{info['due']}    Total: {total_padding}{info['total']}")
     print(f"  {len(deck_names) + 1}. Exit")
     
     while True:
