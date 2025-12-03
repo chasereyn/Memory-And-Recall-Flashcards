@@ -5,7 +5,7 @@ from storage import (
     ensure_data_directory, 
     get_last_session_date,
     sync_all_decks,
-    get_markdown_files,
+    get_text_files,
     get_deck_name_from_file
 )
 from spaced_repetition import (
@@ -163,19 +163,19 @@ def review_session(cards, filepath):
 
 
 def get_available_decks():
-    """Get list of available deck names from markdown files."""
-    markdown_files = get_markdown_files()
-    deck_names = [get_deck_name_from_file(f) for f in markdown_files]
+    """Get list of available deck names from text files."""
+    text_files = get_text_files()
+    deck_names = [get_deck_name_from_file(f) for f in text_files]
     return sorted(deck_names)
 
 
 def select_deck():
     """Show deck selection menu and return selected deck name, or None if user wants to exit."""
-    # Get available decks from markdown files
+    # Get available decks from text files
     deck_names = get_available_decks()
     
     if not deck_names:
-        print("No decks found. Add .md files to the data/ directory.")
+        print("No decks found. Add .txt files to the data/ directory.")
         return None
     
     # Get today's date for calculating due cards
@@ -257,7 +257,7 @@ def main():
     """Main entry point."""
     ensure_data_directory()
     
-    # Sync all decks from markdown files on startup
+    # Sync all decks from text files on startup
     sync_all_decks()
     
     print("\n" + "=" * 50)

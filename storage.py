@@ -4,7 +4,7 @@ import glob
 from datetime import datetime
 from typing import List, Optional, Tuple
 from flashcard import Flashcard
-from parser import parse_markdown_file
+from parser import parse_text_file
 
 
 def ensure_data_directory():
@@ -14,24 +14,24 @@ def ensure_data_directory():
 
 
 def get_deck_name_from_file(filename: str) -> str:
-    """Extract deck name from filename (e.g., 'spanish_vocab.md' -> 'spanish_vocab')."""
-    # Remove .md extension and return
-    if filename.endswith('.md'):
-        return filename[:-3]
+    """Extract deck name from filename (e.g., 'spanish_vocab.txt' -> 'spanish_vocab')."""
+    # Remove .txt extension and return
+    if filename.endswith('.txt'):
+        return filename[:-4]
     return filename
 
 
-def get_markdown_files() -> List[str]:
-    """Get all .md files in the data directory."""
-    markdown_files = []
+def get_text_files() -> List[str]:
+    """Get all .txt files in the data directory."""
+    text_files = []
     data_dir = "data"
     
     if os.path.exists(data_dir):
-        # Find all .md files in data/ (not in subdirectories)
-        pattern = os.path.join(data_dir, "*.md")
-        markdown_files = [os.path.basename(f) for f in glob.glob(pattern)]
+        # Find all .txt files in data/ (not in subdirectories)
+        pattern = os.path.join(data_dir, "*.txt")
+        text_files = [os.path.basename(f) for f in glob.glob(pattern)]
     
-    return markdown_files
+    return text_files
 
 
 def load_cards(filepath: str) -> List[Flashcard]:
@@ -75,20 +75,20 @@ def save_cards(cards: List[Flashcard], filepath: str):
         print(f"Error saving cards to {filepath}: {e}")
 
 
-def sync_deck_from_markdown(markdown_path: str, deck_name: str) -> Tuple[int, int, int]:
+def sync_deck_from_text(text_path: str, deck_name: str) -> Tuple[int, int, int]:
     """
-    Sync a deck from markdown file to JSON file.
+    Sync a deck from text file to JSON file.
     
     Args:
-        markdown_path: Path to the markdown file
+        text_path: Path to the text file
         deck_name: Name of the deck (used for JSON filename)
     
     Returns:
         Tuple of (preserved_count, added_count, removed_count)
     """
-    # Parse markdown to get cards
-    markdown_cards = parse_markdown_file(markdown_path)
-    markdown_ids = {card.id for card in markdown_cards}
+    # Parse text file to get cards
+    text_cards = parse_text_file(text_path)
+    text_ids = {card.id for card in text_cards}
     
     # Load existing JSON cards
     json_path = f"data/decks/{deck_name}.json"
@@ -104,20 +104,20 @@ def sync_deck_from_markdown(markdown_path: str, deck_name: str) -> Tuple[int, in
     added_count = 0
     
     # Keep cards that exist in both (preserve metadata from JSON)
-    for card_id in markdown_ids:
+    for card_id in text_ids:
         if card_id in existing_dict:
             # Card exists in both - preserve from JSON (has metadata)
             synced_cards.append(existing_dict[card_id])
             preserved_count += 1
         else:
-            # New card from markdown
-            # Find the card from markdown_cards list
-            new_card = next(c for c in markdown_cards if c.id == card_id)
+            # New card from text file
+            # Find the card from text_cards list
+            new_card = next(c for c in text_cards if c.id == card_id)
             synced_cards.append(new_card)
             added_count += 1
     
-    # Calculate removed count (cards in JSON but not in markdown)
-    removed_count = len(existing_ids - markdown_ids)
+    # Calculate removed count (cards in JSON but not in text file)
+    removed_count = len(existing_ids - text_ids)
     
     # Save synced cards
     save_cards(synced_cards, json_path)
@@ -126,29 +126,29 @@ def sync_deck_from_markdown(markdown_path: str, deck_name: str) -> Tuple[int, in
 
 
 def sync_all_decks():
-    """Sync all markdown files in data/ with their corresponding JSON files in data/decks/."""
+    """Sync all text files in data/ with their corresponding JSON files in data/decks/."""
     ensure_data_directory()
     
-    markdown_files = get_markdown_files()
+    text_files = get_text_files()
     
-    if not markdown_files:
-        print("No markdown files found in data/ directory.")
+    if not text_files:
+        print("No text files found in data/ directory.")
         return
     
     print("\n" + "=" * 50)
-    print("Syncing decks from markdown files...")
+    print("Syncing decks from text files...")
     print("=" * 50)
     
     total_preserved = 0
     total_added = 0
     total_removed = 0
     
-    for md_file in sorted(markdown_files):
-        deck_name = get_deck_name_from_file(md_file)
-        markdown_path = os.path.join("data", md_file)
+    for txt_file in sorted(text_files):
+        deck_name = get_deck_name_from_file(txt_file)
+        text_path = os.path.join("data", txt_file)
         
         try:
-            preserved, added, removed = sync_deck_from_markdown(markdown_path, deck_name)
+            preserved, added, removed = sync_deck_from_text(text_path, deck_name)
             
             print(f"\n{deck_name}:")
             print(f"  Preserved: {preserved} cards")

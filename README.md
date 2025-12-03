@@ -4,7 +4,7 @@ A spaced repetition flashcard system with automatic syncing and a unique session
 
 ## Quick Start
 
-1. **Add your vocabulary**: Create markdown files (`.md`) in the `data/` directory. Each file represents a deck. Format: term and definition on consecutive lines:
+1. **Add your vocabulary**: Create text files (`.txt`) in the `data/` directory. Each file represents a deck. Format: term and definition on consecutive lines:
    ```
    Roof
    Tejado
@@ -26,12 +26,12 @@ That's it! No setup required—just add your vocabulary and run the program.
 
 ### Automatic Syncing
 
-The system automatically syncs your markdown files with JSON storage on startup. It:
+The system automatically syncs your text files with JSON storage on startup. It:
 - **Preserves** cards that exist in both (keeps your progress and review history)
-- **Adds** new cards from markdown files
-- **Removes** cards that you've deleted from markdown files
+- **Adds** new cards from text files
+- **Removes** cards that you've deleted from text files
 
-Your review progress is never lost—only the source content (markdown) is synced, while all learning metadata stays intact.
+Your review progress is never lost—only the source content (text files) is synced, while all learning metadata stays intact.
 
 ### Unique Session-Based Algorithm
 
@@ -75,14 +75,14 @@ Cards must be rated 4 to complete a session. Your first rating determines how th
 
 ```
 data/
-  ├── spanish_vocab.md          # Your markdown decks
-  ├── english_jokes.md
+  ├── spanish_vocab.txt        # Your text decks
+  ├── english_jokes.txt
   └── decks/
       ├── spanish_vocab.json    # Auto-generated (don't edit)
       └── english_jokes.json
 ```
 
-Edit the markdown files to add or remove vocabulary. The JSON files are automatically managed by the sync system.
+Edit the text files to add or remove vocabulary. The JSON files are automatically managed by the sync system.
 
 ## Requirements
 

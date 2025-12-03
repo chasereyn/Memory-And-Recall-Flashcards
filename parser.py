@@ -3,9 +3,9 @@ from typing import Dict, List
 from flashcard import Flashcard
 
 
-def parse_markdown_file(filepath: str) -> List[Flashcard]:
+def parse_text_file(filepath: str) -> List[Flashcard]:
     """
-    Parse markdown file and create Flashcard objects.
+    Parse text file and create Flashcard objects.
     Pairs consecutive non-empty lines as term/definition.
     No deck headers - just term/definition pairs.
     Returns a list of flashcards.
