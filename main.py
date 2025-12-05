@@ -188,6 +188,10 @@ def select_deck():
         cards = load_cards(json_path)
         total_count = len(cards)
         
+        # Reset daily flags if it's a new day (for accurate counts)
+        last_session_date = get_last_session_date(json_path)
+        reset_daily_flags(cards, last_session_date, today)
+        
         # Get cards due for review
         due_cards = get_cards_for_review(cards, today)
         due_count = len(due_cards)

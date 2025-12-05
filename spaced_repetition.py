@@ -209,12 +209,16 @@ def get_cards_for_review(cards: List[Flashcard], today: Optional[str] = None) ->
     """
     Get all cards ready for review, properly prioritized.
     Combines active cards (in session) and due cards (new session).
+    Active cards are excluded from due cards to prevent duplicates.
     """
     if today is None:
         today = get_today()
     
     active = get_active_cards(cards)
-    due = get_due_cards(cards, today)
+    active_ids = {card.id for card in active}
+    
+    # Exclude active cards from due cards to prevent duplicates
+    due = [card for card in get_due_cards(cards, today) if card.id not in active_ids]
     
     return prioritize_cards(active, due)
 
