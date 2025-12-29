@@ -1,0 +1,608 @@
+country
+país
+
+time
+el tiempo
+
+woman
+la mujer
+
+in this case
+en este caso
+
+moment
+momento
+
+the world
+el mundo
+
+the government
+el gobierno
+
+place
+lugar
+
+form
+forma
+
+state
+estado
+
+the group
+el groupo
+
+the point
+el punto
+
+child
+niño
+
+the problem
+el problema
+
+the system
+el sistema
+
+the president
+el presidente
+
+the type
+el tipo
+
+a change
+un cambio
+
+service
+el servicio
+
+the company
+la empresa
+
+the bill
+la cuenta
+
+the account
+la cuenta
+
+level
+nivel
+
+project
+proyecto
+
+what time is it?
+que hora es?
+
+at what time?
+a que hora?
+
+the development
+el desarrollo
+
+the side
+el lado
+
+the situation
+situación
+
+the end
+el fin
+
+the program
+el programa
+
+health
+la salud
+
+the activity
+la actividad
+
+right
+derecha
+
+straight
+derecho
+
+example
+ejemplo
+
+the middle
+medio
+
+topic
+el tema
+
+the law
+la ley
+
+the zone
+la zona
+
+at the end...
+al final...
+
+sector
+el sector
+
+the street
+la calle
+
+the study
+el estudio
+
+the door
+la puerta
+
+space
+espacio
+
+to walk / step / go
+andar
+
+to give
+dar
+
+to play
+jugar
+
+to water (plants)
+regar
+
+to deny / reject
+negar
+
+to begin / start
+comenzar
+
+to heat up
+calentar
+
+to reheat
+recalentar
+
+to recommend
+recomendar
+
+to burst or pop
+reventar
+
+to sit / place (object)
+sentar
+
+I'm tempted by the salary
+El salario me tienta mucho
+
+to guess correctly
+acertar
+
+to express / manifest
+manifestar
+
+to go bankrupt
+quebrar
+
+to sow and plant
+sembrar
+
+to shake
+temblar
+
+to lie down (maybe before bed)
+acostar
+
+to renew / refurbish
+renovar
+
+to bet or stake
+apostar
+
+to count
+contar
+
+to tell
+contar
+
+to show / display
+mostrar
+
+to populate
+poblar
+
+to try / taste / test
+probar
+
+to remember / recall
+recordar
+
+to solder / weld
+soldar
+
+to let go / drop
+soltar
+
+to dream or imagine
+soñar
+
+to toast
+tostar
+
+to fly or soar
+volar
+
+to have lunch
+almorzar
+
+to calm
+sosegar
+
+to strengthen or reinforce
+reforzar
+
+don't play dumb
+no te hagas
+
+really?
+neta?
+
+hell yea!
+A huevo!
+
+Cmon, hurry up
+Orale!
+
+No way!
+No manches
+
+Good luck!
+Suerte!
+
+Don't be afraid
+No temas
+
+Don't back out
+No te rajas
+
+Come here baby I'll hug you
+Aww ven aca pollito te abrazo
+
+Don't be chicken
+No seas gallina
+
+Sensitive heart
+Corazon de pollo
+
+You have goosebumps
+Tienes piel de gallina
+
+I'm running around like a headless chicken
+Ando como pollo sin cabeza
+
+Dayummm! (in front of her)
+Quién pidió pollo?
+
+farmer
+granjero
+
+to gamble
+jugar
+
+to charge for
+cobrar
+
+To cover
+Cubrir
+
+to fit or have room for
+caber
+
+I only got four right
+Solo acerté cuatro
+
+To guess / predict
+Adivinar
+
+society
+la sociedad
+
+action
+la acción
+
+town
+pueblo
+
+the director
+el director
+
+reality
+la realidad
+
+the voice
+la voz
+
+product
+producto
+
+market
+mercado
+
+head
+la cabeza
+
+population
+la poblacion
+
+death
+la muerte
+
+give me a minute
+dame un minutito
+
+the land
+la tierra
+
+this sense
+este sentido
+
+measure
+la medida
+
+security
+seguridad
+
+image
+imagen
+
+the power
+el poder
+
+the use
+el uso
+
+the reason
+la razón
+
+a step
+un paso
+
+century
+siglo
+
+target
+objectivo
+
+a youth
+un joven
+
+the need
+la necesidad
+
+the police
+el policía
+
+species
+la especie
+
+the path
+el camino
+
+art
+el arte
+
+attention
+la atención
+
+light (to see)
+luz
+
+the majority
+la mayoría
+
+disease
+enfermedad
+
+a game
+un juego
+
+relationship
+la relación
+
+field
+el campo
+
+the age
+la edad
+
+risk
+el riesgo
+
+force
+fuerza
+
+high quality
+bien calidad
+
+region
+la región
+
+movement
+movimiento
+
+war
+la guerra
+
+author
+autor
+
+dollar
+dólar
+
+the price
+el precio
+
+agreement
+acuerdo
+
+the model
+el model
+
+the front
+el frente
+
+line (of people)
+file
+
+weight
+el peso
+
+mode
+el modo
+
+to smell
+oler
+
+to be worth, to cost
+valer
+
+to undo or take apart
+deshacer
+
+Nothing satisfies me more than making my dreams come true.
+Nada me satisface más que cumplir mis sueños.
+
+The product doesn't meet the industry standards nor complies with government regulations.
+El producto no satisface los estándares de la industria ni cumple con las regulaciones del gobierno.
+
+Turn left here if you want to avoid the traffic.
+Gira aquí a la izquierda si quieres evitar el tráfico.
+
+The bag contains three ounces of chocolate.
+La bolsa contiene tres onzas de chocolate
+
+The accident stopped the flow of traffic completely.
+El accidente detuvo la circulación de tráfico por completo
+
+to arrange or lay out
+disponer
+
+to entertain
+entretener
+
+to expose or exhibit
+exponer
+
+to impose
+imponer
+
+to maintain
+mantener
+
+to postpone / put off
+postponer
+
+to propose / suggest
+proponer
+
+to replace or replenish
+reponer
+
+to retain
+retener
+
+to sustain or sopport
+sostener
+
+to attract / draw into
+atraer
+
+to fall or hang
+caer
+
+Don't distract me right now
+No me distraigas ahora
+
+to remove or extract
+extraer
+
+to carry or bring
+traer
+
+What are you carrying in that heavy suitcase?
+¿Qué traes en esta maleta tan pesada?
+
+to contract or catch (cold / disease)
+contraer
+
+to provide or supply
+proveer
+
+to return (item) or give back
+devolver
+
+to return
+volver
+
+to dissolve
+disolver
+
+to wrap
+envolver
+
+to move
+mover
+
+to promote
+promover
+
+to resolve
+resolver
+
+to bite or chew
+morder
+
+It began to rain five minutes after I left home.
+Empezó a llover cinco minutos después que salí de casa.
+
+to misunderstand
+malentender
+
+to defend
+defender
+
+it's raining cats and dogs
+Está cayendo una buena llevada
+
+yessssss
+siiiiiip
+
+to ring
+sonar
+
+word
+la palabra
+
+hopefully
+ojalá
+
+to understand
+comprender
+
+to ask
+preguntar
+
+to avoid
+evitar
+
+to cut
+cortar
+
+I suppose that the exam won't be very difficult for you with grades like that.
+Supongo que el examen no te será muy difícil con notas así
+
+Could you give these books back to the librarian?
+¿Podrías devolver estos libros a la bibliotecaria?
+
+Miguel got undressed to go in the showers at the changing room.
+Miguel se desnudó para entrar a las duchas del vestuario.
+
+to sign
+firmar
