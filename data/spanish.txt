@@ -343,7 +343,7 @@ la tierra
 this sense
 este sentido
 
-measure
+the measure
 la medida
 
 security
@@ -553,9 +553,6 @@ mover
 to promote
 promover
 
-to resolve
-resolver
-
 to bite or chew
 morder
 
@@ -606,3 +603,510 @@ Miguel se desnudó para entrar a las duchas del vestuario.
 
 to sign
 firmar
+
+Can you help me with this?
+¿Me echas la mano con esto?
+
+I'm feeling great today!
+Hoy estoy al cien.
+
+She ignored me again
+Me dio el avión otra vez.
+
+That girl is so preppy, always with her Starbucks
+Esa chica es bien fresa, siempre con su Starbucks
+
+I just landed
+Acado de aterrizar
+
+Shamelessly / unapologetically
+Sin pena
+
+Trapped
+Atrapado
+
+That wasn't going to work
+No iba a functionar
+
+Covered
+Cubierto
+
+A quarter to seven
+cuarto para la siete
+
+It's chilly out!
+Hace frijolito!
+
+How convenient!
+Qué conveniente!
+
+You don't know how thankful I am to have met you
+No sabes lo mucho que agradezco haberte conocido
+
+Peace (calmness)
+Tranquilidad
+
+To fight
+luchar
+
+To launch
+Lanzar
+
+I don't know what life has prepared for us
+No sé lo que la vida nos tenga preparado
+
+To cross / get through
+Atraversar
+
+accountant
+el contador
+
+climate
+el clima
+
+telephone
+el teléfono
+
+metro
+el metro
+
+map
+el mapa
+
+pants
+el pantalón
+
+grape
+la uva
+
+scientist
+el científico
+
+player
+el jugador
+
+west
+el oeste
+
+often
+a menudo
+
+to be born
+nacer
+
+nephew
+el sobrino
+
+lunch
+el almuerzo
+
+last name
+el apellido
+
+pencil
+el lápiz
+
+career
+la carrera
+
+language
+el idioma
+
+to offer
+ofrecer
+
+pain
+el dolor
+
+maybe
+tal vez
+
+ball
+la pelota
+
+first
+primero
+
+second
+segundo
+
+third
+tercero
+
+fourth
+cuarto
+
+fifth
+quinto
+
+sixth
+sexto
+
+seventh
+séptimo
+
+eighth
+octavo
+
+ninth
+noveno
+
+tenth
+décimo
+
+well
+bien
+
+to achieve
+lograr
+
+almost
+casi
+
+to use
+usar
+
+to take care of
+cuidar
+
+face
+la cara
+
+homework
+la tarea
+
+without
+sin
+
+hair
+el pelo
+
+happy
+feliz
+
+to save
+guardar
+
+little
+poco
+
+angry
+enojado
+
+to fill
+llenar
+
+watch
+el reloj
+
+Well done!
+Bien hecho!
+
+Bravo!
+Bravo!
+
+You did that very well!
+Lo hiciste muy bien!
+
+That's the way to do it!
+Asi se hace!
+
+How great!
+Qué bien!
+
+I don't even have a blanket
+No tengo ni siquiera una manta
+
+I don't even know his name
+Ni siquiera sé su nombre
+
+The rope is all tangled up
+La cuerda está toda enredada
+
+Did you have fun last night?
+¿Te divertiste anoche?
+
+Did everything go good last night?
+¿Te lo pasaste bien anoche?
+
+Great question!
+Buenisima pregunta!
+
+Daily life
+La vida diariamente
+
+I'm dying to see them
+Me muerte por verlos
+
+My name is Chase
+Me llamo Chase
+
+Round
+Redondo
+
+Don't crash into anything
+¡No te choques con nada!
+
+Drive carefully!
+Conduce con cuidado!
+
+People here tend to be very friendly
+La gente aquí suelen ser muy amable
+
+He tends to arrive late
+Él suele llegar tarde
+
+Things tend to get complicated. (single)
+Las cosas tienden a complicarse
+
+Crustaceans
+Crustáceos
+
+To roast
+Torrar
+
+To measure
+Medir
+
+To resolve problems
+Resolver problemas
+
+What goes into it?
+Que consiste eso?
+
+Properties
+Propeidades
+
+Branch
+Ramas
+
+Leaves
+Hojas
+
+Gigantic / enormous
+Enorme
+
+Marvelous
+Maravilloso
+
+Difficult to answer
+Dificil a contestar
+
+The clouds in the sky
+Lasw nubes en el cielo
+
+Floor
+Piso
+
+Pattern
+El Patrón
+
+Sides
+Lados
+
+Vertices
+Vertices
+
+Notebook
+Cuaderno
+
+To appear
+Aparecer
+
+Including in nature
+Incluso en la naturaleza
+
+Bees
+Las abejas
+
+Honey
+La miel
+
+Popcorn
+Palomitas
+
+They designed and constructed it and they moved in a month ago
+Ellos la diseñaron y construyeron y se mudaron hace un mes
+
+To design
+Diseñar
+
+To construct
+Construir
+
+Janitor
+El conserje
+
+Flem
+Flema
+
+Pancakes
+Hotcakes
+
+Did you stay up late?
+Te quedaste despierto hasta tarde?
+
+I got fired from work
+Me echaron del trabajo
+s
+Sparkling water
+Agua con gas
+\
+Membership
+Membercia
+
+Not since long ago
+No hace mucho tiempo
+
+We were able to spray some ether on the engine and get it running
+Pudimos rociar un poco de éter en el motor y ponerlo en marcha
+
+Almonds
+Almendras
+
+Lightbulb
+Foco
+
+Socks (casual)
+Celcetas
+
+Socks (short)
+Calcentines
+
+Commitment
+Compromiso
+
+Por que veas lo que se siente
+So that you see how it feels
+
+I've seen you before
+Tu cara me suena
+
+Rear-view Mirror
+Retrovisor
+
+What time does the sun set?
+A qué hora se pone el sol?
+
+It's fine whether its you or me
+No importa si eres tú o soy yo
+
+Wheels
+Ruedas
+
+Stereotype
+Estereotipo
+
+This has a no return policy
+Esto no se puede devolver
+
+We should all recognize that we are the captains of our own boats
+Todos debemos reconocer que somos los capitanes de nuestros propios barcos
+
+I'll be gentle
+Seré delicado
+
+Sorry about being so low energy it's been a killer day
+Perdón por estar tan apático, ha sido un día horrible
+
+That's the best way to learn: just throw yourself into it
+Esa es la mejor manera de aprender: simplemente lánzate a ello
+
+How far is that?
+A que distancia es eso?
+
+How much time is that?
+Cuanto tiempo es eso?
+
+We couldn't focus
+No podáimos concentrarnos
+
+Great things come to those who wait
+Las cosas buenas llegan a quienes saben esperar
+
+End of story
+Punto final
+
+She told me...
+Me dijo...
+
+Pantry
+Despensa
+
+Closet
+Armario
+
+The fact of the matter is...
+El hecho es que..
+
+It was a draw
+Fue un empate
+
+Fresh donuts
+Donuts recién hechos
+
+I have the same opinion
+Lo mismo opino
+
+Wealth
+Riqueza
+
+Chess
+Ajedrez
+
+A sunny day
+Un día soleado!
+
+Cranberries
+Arándanos rojos
+
+Blueberries
+Arándanos azules
+
+Blackberries
+Moras
+
+Cherries
+Cerezas
+
+Cherry Tomatoes
+Cheris
+
+Strawberries
+Fresas
+
+Your driving makes me nautious
+Tu forma de conducir me da náuseas
+
+Do you approve?
+Estás de acuerdo?
+
+That whiskey don't play
+Ese whiskey no se juega
+
+You know what this reminds me of?
+¿Sabes a qué me recuerda esto?
+
+Symbol
+Símbolo
+
+Olive
+Oliva
+
+Glass
+Vidrio
+
+It makes me happy
+Me pone feliz
+
+It makes me sad
+Me pone triste
+
+It makes me nervious
+Me pone nervioso
+
+It makes me afraid
+Me da miedo
+
+It doesn't matter to me
+Me da igual
