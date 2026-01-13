@@ -2452,7 +2452,7 @@ tanto
 so
 tan
 
-to have
+to have (aux)
 haber
 
 nice to meet you
@@ -4171,7 +4171,7 @@ girar
 beauty
 la belleza
 
-to take off
+to lift off (unstick)(be successful)
 despegar
 
 to water
