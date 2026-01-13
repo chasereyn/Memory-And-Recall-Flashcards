@@ -57,19 +57,27 @@ Unlike traditional spaced repetition algorithms (like Anki's SM-2), this system 
 - Within sessions, cards you've attempted more times get priority
 - This focuses your attention on what needs the most work
 
-**5. Adaptive Difficulty Tracking**
+**5. Fixed-Distance Reinsertion**
+- Cards rated 1 (Hard) reappear immediately at the front of the queue
+- Cards rated 2 (Medium-Hard) reappear 10-20 cards ahead (fixed distance, clamped)
+- Cards rated 3 (Medium) reappear 20-30 cards ahead (fixed distance, clamped)
+- Unlike proportional systems, this ensures you see struggling cards again within a predictable window
+- Works seamlessly for both small decks (20 cards) and large decks (3000+ cards)
+- Prevents cards from being buried thousands of positions back in large decks
+
+**6. Adaptive Difficulty Tracking**
 - The system tracks your struggle history separately from interval calculations
 - Cards you've struggled with get more frequent reviews, even if intervals suggest otherwise
 - This ensures difficult material doesn't get forgotten
 
 ## Rating System
 
-- **1 = Hard/Repeat**: Card shown again immediately (stays in session)
-- **2 = Medium-Hard**: Card shown again soon (stays in session)
-- **3 = Medium**: Card shown again soon (stays in session)
-- **4 = Easy**: Card completed for session (removed from queue)
+- **1 = Hard/Repeat**: Card shown again immediately at the front of the queue (stays in session)
+- **2 = Medium-Hard**: Card reappears 10-20 cards ahead (fixed distance, stays in session)
+- **3 = Medium**: Card reappears 20-30 cards ahead (fixed distance, stays in session)
+- **4 = Easy**: Card completed for session (removed from queue, scheduled for future review)
 
-Cards must be rated 4 to complete a session. Your first rating determines how the algorithm adjusts the card's difficulty and scheduling.
+Cards must be rated 4 to complete a session. Your first rating determines how the algorithm adjusts the card's difficulty and scheduling. The fixed-distance reinsertion ensures you'll see cards rated 2-3 again within 10-30 cards, preventing them from being buried thousands of positions back in large decks.
 
 ## File Structure
 

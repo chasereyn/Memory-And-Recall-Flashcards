@@ -123,14 +123,21 @@ def review_session(cards, filepath):
             review_cards = [c for c in review_cards if c.id != current_card.id]
             review_cards.insert(0, current_card)
         elif rating in [2, 3] and not current_card.completed_today:
-            # Rating 2/3: Insert somewhere in the middle/back of the queue
+            # Rating 2/3: Insert at fixed distance ahead (not proportional)
+            # This prevents cards from being buried thousands of positions back in large decks
             # Remove from current position first
             review_cards = [c for c in review_cards if c.id != current_card.id]
-            # Insert at random position in middle/back portion (skip first 1-3 cards)
+            
             if len(review_cards) > 0:
-                min_pos = min(3, len(review_cards))
-                max_pos = len(review_cards)
-                insert_pos = random.randint(min_pos, max_pos)
+                if rating == 2:
+                    # Rating 2: Insert 10-20 cards ahead (fixed distance, clamped)
+                    target_pos = min(20, max(10, int(len(review_cards) * 0.33)))
+                else:  # rating == 3
+                    # Rating 3: Insert 20-30 cards ahead (fixed distance, clamped)
+                    target_pos = min(30, max(20, int(len(review_cards) * 0.67)))
+                
+                # Ensure we don't go beyond the end
+                insert_pos = min(target_pos, len(review_cards))
                 review_cards.insert(insert_pos, current_card)
             else:
                 # If queue is empty, just add it
