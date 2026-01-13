@@ -123,22 +123,28 @@ def review_session(cards, filepath):
             review_cards = [c for c in review_cards if c.id != current_card.id]
             review_cards.insert(0, current_card)
         elif rating in [2, 3] and not current_card.completed_today:
-            # Rating 2/3: Insert at fixed distance ahead (not proportional)
+            # Rating 2/3: Insert at random position within fixed range
             # This prevents cards from being buried thousands of positions back in large decks
             # Remove from current position first
             review_cards = [c for c in review_cards if c.id != current_card.id]
             
             if len(review_cards) > 0:
                 if rating == 2:
-                    # Rating 2: Insert 10-20 cards ahead (fixed distance, clamped)
-                    target_pos = min(20, max(10, int(len(review_cards) * 0.33)))
+                    # Rating 2: Random position between 10-25 cards ahead (clamped to deck size)
+                    min_pos = min(10, len(review_cards))
+                    max_pos = min(25, len(review_cards))
                 else:  # rating == 3
-                    # Rating 3: Insert 20-30 cards ahead (fixed distance, clamped)
-                    target_pos = min(30, max(20, int(len(review_cards) * 0.67)))
+                    # Rating 3: Random position between 20-40 cards ahead (clamped to deck size)
+                    min_pos = min(20, len(review_cards))
+                    max_pos = min(40, len(review_cards))
                 
-                # Ensure we don't go beyond the end
-                insert_pos = min(target_pos, len(review_cards))
-                review_cards.insert(insert_pos, current_card)
+                # Insert at random position within range, or append if range is invalid
+                if min_pos <= max_pos:
+                    insert_pos = random.randint(min_pos, max_pos)
+                    review_cards.insert(insert_pos, current_card)
+                else:
+                    # If deck is smaller than minimum, append to end
+                    review_cards.append(current_card)
             else:
                 # If queue is empty, just add it
                 review_cards.append(current_card)

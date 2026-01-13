@@ -59,8 +59,8 @@ Unlike traditional spaced repetition algorithms (like Anki's SM-2), this system 
 
 **5. Fixed-Distance Reinsertion**
 - Cards rated 1 (Hard) reappear immediately at the front of the queue
-- Cards rated 2 (Medium-Hard) reappear 10-20 cards ahead (fixed distance, clamped)
-- Cards rated 3 (Medium) reappear 20-30 cards ahead (fixed distance, clamped)
+- Cards rated 2 (Medium-Hard) reappear 10-25 cards ahead (fixed range, clamped)
+- Cards rated 3 (Medium) reappear 20-40 cards ahead (fixed range, clamped)
 - Unlike proportional systems, this ensures you see struggling cards again within a predictable window
 - Works seamlessly for both small decks (20 cards) and large decks (3000+ cards)
 - Prevents cards from being buried thousands of positions back in large decks
@@ -73,8 +73,8 @@ Unlike traditional spaced repetition algorithms (like Anki's SM-2), this system 
 ## Rating System
 
 - **1 = Hard/Repeat**: Card shown again immediately at the front of the queue (stays in session)
-- **2 = Medium-Hard**: Card reappears 10-20 cards ahead (fixed distance, stays in session)
-- **3 = Medium**: Card reappears 20-30 cards ahead (fixed distance, stays in session)
+- **2 = Medium-Hard**: Card reappears 10-20 cards ahead (fixed range, stays in session)
+- **3 = Medium**: Card reappears 20-30 cards ahead (fixed range, stays in session)
 - **4 = Easy**: Card completed for session (removed from queue, scheduled for future review)
 
 Cards must be rated 4 to complete a session. Your first rating determines how the algorithm adjusts the card's difficulty and scheduling. The fixed-distance reinsertion ensures you'll see cards rated 2-3 again within 10-30 cards, preventing them from being buried thousands of positions back in large decks.

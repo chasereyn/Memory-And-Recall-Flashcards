@@ -8965,9 +8965,6 @@ la herramienta
 global warming
 el calentamiento global
 
-refrigerator
-el frigorífico
-
 bridge
 el puente
 
