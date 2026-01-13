@@ -62,8 +62,8 @@ def update_card_after_review(card: Flashcard, rating: int) -> None:
     
     if rating in [1, 2, 3]:
         # Card stays in session - track first rating and increment attempts
-        if card.first_rating_this_session is None:
-            card.first_rating_this_session = rating
+        if card.first_rating is None:
+            card.first_rating = rating
         
         card.session_attempts += 1
         card.completed_today = False
@@ -71,7 +71,7 @@ def update_card_after_review(card: Flashcard, rating: int) -> None:
     
     elif rating == 4:
         # Card is done for session - update metadata based on first rating
-        first_rating = card.first_rating_this_session if card.first_rating_this_session is not None else 4
+        first_rating = card.first_rating if card.first_rating is not None else 4
         
         # Update metadata based on first rating
         if first_rating == 1:
@@ -79,7 +79,6 @@ def update_card_after_review(card: Flashcard, rating: int) -> None:
             card.ease_factor = max(MIN_EASE_FACTOR, card.ease_factor - EASE_FACTOR_DECREASE_HARD)
             card.interval = max(MIN_INTERVAL, card.interval // 2)
             card.difficulty += 2
-            card.repetitions = 0
             card.consecutive_easy_sessions = 0
         
         elif first_rating == 2:
@@ -87,7 +86,6 @@ def update_card_after_review(card: Flashcard, rating: int) -> None:
             card.ease_factor = max(MIN_EASE_FACTOR, card.ease_factor - EASE_FACTOR_DECREASE_MEDIUM)
             card.interval = max(MIN_INTERVAL, int(card.interval * 0.7))
             card.difficulty += 1
-            card.repetitions = max(0, card.repetitions - 1)
             card.consecutive_easy_sessions = 0
         
         elif first_rating == 3:
@@ -95,13 +93,11 @@ def update_card_after_review(card: Flashcard, rating: int) -> None:
             card.ease_factor = max(MIN_EASE_FACTOR, card.ease_factor - EASE_FACTOR_DECREASE_EASY)
             # Keep interval similar or slight decrease
             card.interval = max(MIN_INTERVAL, int(card.interval * 0.9))
-            card.repetitions = max(0, card.repetitions - 0.5)  # Slight reduction
             card.consecutive_easy_sessions = 0
         
         elif first_rating == 4:
             # Easy - user knew it immediately
             card.ease_factor = min(MAX_EASE_FACTOR, card.ease_factor + EASE_FACTOR_INCREASE)
-            card.repetitions += 1
             card.difficulty = max(0, card.difficulty - 1)
             
             # Apply exponential backoff for consecutive easy sessions
@@ -111,9 +107,7 @@ def update_card_after_review(card: Flashcard, rating: int) -> None:
             card.interval = min(MAX_INTERVAL, new_interval)
         
         # Update review tracking
-        card.last_reviewed = today
         card.next_review = add_days(today, card.interval)
-        card.review_count += 1
         card.completed_today = True
         
         # Reset session fields
@@ -127,7 +121,7 @@ def get_active_cards(cards: List[Flashcard]) -> List[Flashcard]:
     """
     return [
         card for card in cards
-        if not card.completed_today and card.first_rating_this_session is not None
+        if not card.completed_today and card.first_rating is not None
     ]
 
 
@@ -168,7 +162,6 @@ def prioritize_cards(active_cards: List[Flashcard], due_cards: List[Flashcard]) 
     Due cards sorted by:
     1. difficulty (descending) - struggling cards first
     2. next_review (ascending, None first) - oldest due dates first
-    3. review_count (ascending) - new cards first
     """
     # Sort active cards
     active_sorted = sorted(
@@ -180,7 +173,7 @@ def prioritize_cards(active_cards: List[Flashcard], due_cards: List[Flashcard]) 
     # Sort due cards
     def due_sort_key(card: Flashcard):
         next_rev = card.next_review if card.next_review else "0000-01-01"  # None comes first
-        return (-card.difficulty, next_rev, card.review_count)
+        return (-card.difficulty, next_rev)
     
     due_sorted = sorted(due_cards, key=due_sort_key)
     
@@ -225,5 +218,5 @@ def get_cards_for_review(cards: List[Flashcard], today: Optional[str] = None) ->
 
 def is_card_in_session(card: Flashcard) -> bool:
     """Check if card is currently in an active session."""
-    return not card.completed_today and card.first_rating_this_session is not None
+    return not card.completed_today and card.first_rating is not None
 

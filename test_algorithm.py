@@ -17,10 +17,10 @@ def test_rating_1_keeps_in_session():
     
     update_card_after_review(card, 1)
     
-    assert card.first_rating_this_session == 1, "First rating should be 1"
+    assert card.first_rating == 1, "First rating should be 1"
     assert card.session_attempts == 1, "Session attempts should be 1"
     assert card.completed_today == False, "Card should not be completed"
-    assert card.next_review is None or card.next_review == card.last_reviewed, "Next review should not be set yet"
+    assert card.next_review is None, "Next review should not be set yet"
     print("PASSED\n")
 
 
@@ -35,7 +35,7 @@ def test_rating_1_to_4_updates_metadata():
     
     update_card_after_review(card, 4)
     
-    assert card.first_rating_this_session is None, "Session should be reset"
+    assert card.first_rating is None, "Session should be reset"
     assert card.session_attempts == 0, "Session attempts should be reset"
     assert card.completed_today == True, "Card should be completed"
     assert card.ease_factor < initial_ease, "Ease factor should decrease (was difficult)"
@@ -72,7 +72,7 @@ def test_priority_sorting():
     
     # Create cards with different states
     active_card = Flashcard(id="active", term="Active", definition="Answer")
-    active_card.first_rating_this_session = 1
+    active_card.first_rating = 1
     active_card.session_attempts = 3
     active_card.completed_today = False
     
@@ -95,14 +95,14 @@ def test_multiple_ratings_before_4():
     card = Flashcard(id="test5", term="Test", definition="Answer", ease_factor=2.5, interval=5)
     
     update_card_after_review(card, 1)  # First rating: 1
-    assert card.first_rating_this_session == 1
+    assert card.first_rating == 1
     
     update_card_after_review(card, 2)  # Second rating: 2
-    assert card.first_rating_this_session == 1, "First rating should remain 1"
+    assert card.first_rating == 1, "First rating should remain 1"
     assert card.session_attempts == 2
     
     update_card_after_review(card, 3)  # Third rating: 3
-    assert card.first_rating_this_session == 1, "First rating should remain 1"
+    assert card.first_rating == 1, "First rating should remain 1"
     assert card.session_attempts == 3
     
     initial_struggle = card.difficulty

@@ -532,9 +532,6 @@ What are you carrying in that heavy suitcase?
 to contract or catch (cold / disease)
 contraer
 
-to provide or supply
-proveer
-
 to return (item) or give back
 devolver
 
@@ -565,9 +562,6 @@ malentender
 to defend
 defender
 
-it's raining cats and dogs
-Está cayendo una buena llevada
-
 yessssss
 siiiiiip
 
@@ -582,9 +576,6 @@ ojalá
 
 to understand
 comprender
-
-to ask
-preguntar
 
 to avoid
 evitar
@@ -607,7 +598,7 @@ firmar
 Can you help me with this?
 ¿Me echas la mano con esto?
 
-I'm feeling great today!
+I'm feeling at 100% today!
 Hoy estoy al cien.
 
 She ignored me again
@@ -640,7 +631,7 @@ Hace frijolito!
 How convenient!
 Qué conveniente!
 
-You don't know how thankful I am to have met you
+You don't know how much I'm thankful to have met you
 No sabes lo mucho que agradezco haberte conocido
 
 Peace (calmness)
@@ -653,7 +644,7 @@ To launch
 Lanzar
 
 I don't know what life has prepared for us
-No sé lo que la vida nos tenga preparado
+No sé lo que la vida nos tenga preparado para nosotros
 
 To cross / get through
 Atraversar
@@ -666,9 +657,6 @@ el clima
 
 telephone
 el teléfono
-
-metro
-el metro
 
 map
 el mapa
@@ -787,17 +775,11 @@ feliz
 to save
 guardar
 
-little
-poco
-
 angry
 enojado
 
 to fill
 llenar
-
-watch
-el reloj
 
 Well done!
 Bien hecho!
@@ -856,7 +838,7 @@ La gente aquí suelen ser muy amable
 He tends to arrive late
 Él suele llegar tarde
 
-Things tend to get complicated. (single)
+Things tend to get complicated
 Las cosas tienden a complicarse
 
 Crustaceans
@@ -948,15 +930,15 @@ Te quedaste despierto hasta tarde?
 
 I got fired from work
 Me echaron del trabajo
-s
+
 Sparkling water
 Agua con gas
-\
+
 Membership
 Membercia
 
 Not since long ago
-No hace mucho tiempo
+No hasta mucho tiempo
 
 We were able to spray some ether on the engine and get it running
 Pudimos rociar un poco de éter en el motor y ponerlo en marcha
@@ -997,7 +979,7 @@ Ruedas
 Stereotype
 Estereotipo
 
-This has a no return policy
+You can't return this
 Esto no se puede devolver
 
 We should all recognize that we are the captains of our own boats
@@ -1110,3 +1092,21 @@ Me da miedo
 
 It doesn't matter to me
 Me da igual
+
+Excuse me
+Con permiso
+
+Beep (excuse me)
+Comper
+
+What? (clarify)
+Mande?
+
+May I have...
+Me regalas...
+
+Can you give me the time
+Me reladas tu hora
+
+Computer Science
+Ciencias de la Computación
