@@ -58,26 +58,56 @@ Unlike traditional spaced repetition algorithms (like Anki's SM-2), this system 
 - This focuses your attention on what needs the most work
 
 **5. Fixed-Distance Reinsertion**
-- Cards rated 1 (Hard) reappear immediately at the front of the queue
+- Cards rated 1 (Hard) reappear at 2nd position in the queue (after one other card)
 - Cards rated 2 (Medium-Hard) reappear 10-25 cards ahead (fixed range, clamped)
 - Cards rated 3 (Medium) reappear 20-40 cards ahead (fixed range, clamped)
 - Unlike proportional systems, this ensures you see struggling cards again within a predictable window
 - Works seamlessly for both small decks (20 cards) and large decks (3000+ cards)
 - Prevents cards from being buried thousands of positions back in large decks
+- The brief gap before hard cards reappear forces cognitive refocusing, preventing short-term memory from masquerading as true learning
 
 **6. Adaptive Difficulty Tracking**
 - The system tracks your struggle history separately from interval calculations
 - Cards you've struggled with get more frequent reviews, even if intervals suggest otherwise
 - This ensures difficult material doesn't get forgotten
 
+## Why This Algorithm is Better
+
+Compared to traditional spaced repetition systems (like Anki's SM-2), this algorithm offers several key advantages:
+
+### **1. Prevents Gaming the System**
+- Traditional systems: You can see the answer, then rate it "easy" to push it far into the future
+- This system: Your **first rating** determines difficulty, so momentary lapses don't inflate intervals
+- Cards must be rated 4 to complete, ensuring true mastery, not just recognition
+
+### **2. Cognitive Spacing for Better Retention**
+- Hard cards (rating 1) reappear at 2nd position, not immediately
+- This brief gap forces your brain to refocus, preventing short-term/muscle memory from masquerading as learning
+- Research shows that desirable difficulty improves long-term retention
+
+### **3. Scales to Any Deck Size**
+- Fixed-distance reinsertion works identically for 20 cards or 3000+ cards
+- Traditional proportional systems can bury struggling cards thousands of positions back in large decks
+- You'll always see struggling cards again within a predictable, manageable window
+
+### **4. Focuses Effort Where It's Needed**
+- Active session cards (cards you're struggling with) appear first
+- Prioritized by attempts and difficulty, ensuring you spend time on what needs work
+- Well-mastered cards fade into the background with exponential backoff
+
+### **5. Text-File Based with Metadata Preservation**
+- Edit vocabulary in simple text files—no complex database management
+- Learning progress is preserved during sync
+- Easy to add/remove cards without losing your review history
+
 ## Rating System
 
-- **1 = Hard/Repeat**: Card shown again immediately at the front of the queue (stays in session)
-- **2 = Medium-Hard**: Card reappears 10-20 cards ahead (fixed range, stays in session)
-- **3 = Medium**: Card reappears 20-30 cards ahead (fixed range, stays in session)
+- **1 = Hard/Repeat**: Card reappears at 2nd position in queue (after one other card, stays in session)
+- **2 = Medium-Hard**: Card reappears 10-25 cards ahead (fixed range, stays in session)
+- **3 = Medium**: Card reappears 20-40 cards ahead (fixed range, stays in session)
 - **4 = Easy**: Card completed for session (removed from queue, scheduled for future review)
 
-Cards must be rated 4 to complete a session. Your first rating determines how the algorithm adjusts the card's difficulty and scheduling. The fixed-distance reinsertion ensures you'll see cards rated 2-3 again within 10-30 cards, preventing them from being buried thousands of positions back in large decks.
+Cards must be rated 4 to complete a session. Your first rating determines how the algorithm adjusts the card's difficulty and scheduling. The fixed-distance reinsertion ensures you'll see cards rated 2-3 again within 10-40 cards, preventing them from being buried thousands of positions back in large decks. Hard cards (rating 1) reappear after one other card to force cognitive refocusing and prevent short-term memory from masquerading as true learning.
 
 ## File Structure
 
