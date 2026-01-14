@@ -118,10 +118,12 @@ def review_session(cards, filepath):
         
         # Handle card re-insertion based on rating
         if rating == 1 and not current_card.completed_today:
-            # Rating 1: Show immediately (move to front)
-            # Remove from current position and insert at front
+            # Rating 1: Insert at 2nd position (so user sees at least one other card first)
+            # Remove from current position and insert at position 1
             review_cards = [c for c in review_cards if c.id != current_card.id]
-            review_cards.insert(0, current_card)
+            # Insert at position 1 (2nd in queue), or at end if queue is too short
+            insert_pos = min(1, len(review_cards))
+            review_cards.insert(insert_pos, current_card)
         elif rating in [2, 3] and not current_card.completed_today:
             # Rating 2/3: Insert at random position within fixed range
             # This prevents cards from being buried thousands of positions back in large decks
