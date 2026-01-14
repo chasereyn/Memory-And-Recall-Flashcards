@@ -38,7 +38,7 @@ Your review progress is never lost—only the source content (text files) is syn
 Unlike traditional spaced repetition systems (like Anki's SM-2), this uses a **session-based approach** designed to prevent gaming and improve retention:
 
 **Rating System:**
-- **1 = Hard/Repeat**: Reappears randomly in one of the first 5 positions (stays in session)
+- **1 = Hard/Repeat**: Reappears randomly in positions 2-5 (stays in session)
 - **2 = Medium-Hard**: Reappears 10-25 cards ahead (fixed range, stays in session)
 - **3 = Medium**: Reappears 20-40 cards ahead (fixed range, stays in session)
 - **4 = Easy**: Completed for session (removed from queue, scheduled for future review)
@@ -49,7 +49,7 @@ Unlike traditional spaced repetition systems (like Anki's SM-2), this uses a **s
 
 **Session Completion Required** - Cards rated 1-3 stay in session until rated 4. This ensures active recall rather than passive recognition and prevents gaming the system (you can't just see the answer and rate it "easy").
 
-**Fixed-Distance Reinsertion** - Unlike proportional systems that can bury struggling cards thousands of positions back in large decks, fixed distances work identically for 20 cards or 3000+ cards. Hard cards reappear randomly in one of the first 5 positions (not immediately) to force cognitive refocusing—the unpredictable brief gap prevents short-term/muscle memory from masquerading as true learning.
+**Fixed-Distance Reinsertion** - Unlike proportional systems that can bury struggling cards thousands of positions back in large decks, fixed distances work identically for 20 cards or 3000+ cards. Hard cards reappear randomly in positions 2-5 (not immediately) to force cognitive refocusing—the unpredictable brief gap prevents short-term/muscle memory from masquerading as true learning.
 
 **Smart Prioritization** - Active session cards (struggling) appear first, prioritized by attempts and difficulty. Well-mastered cards fade into the background with exponential backoff (consecutive easy sessions multiply intervals exponentially).
 

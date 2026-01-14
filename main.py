@@ -118,14 +118,19 @@ def review_session(cards, filepath):
         
         # Handle card re-insertion based on rating
         if rating == 1 and not current_card.completed_today:
-            # Rating 1: Insert randomly in one of the first 5 positions (for cognitive refocusing)
+            # Rating 1: Insert randomly in positions 2-5 (for cognitive refocusing)
             # Remove from current position first
             review_cards = [c for c in review_cards if c.id != current_card.id]
-            # Insert at random position in first 5 spots (0-4), clamped to available positions
+            # Insert at random position in positions 2-5 (1-4 in 0-indexed), clamped to available positions
             if len(review_cards) > 0:
-                max_pos = min(4, len(review_cards) - 1)
-                insert_pos = random.randint(0, max_pos)
-                review_cards.insert(insert_pos, current_card)
+                min_pos = 1  # Position 2 (1-indexed)
+                max_pos = min(4, len(review_cards) - 1)  # Position 5 (1-indexed) or end of queue
+                if min_pos <= max_pos:
+                    insert_pos = random.randint(min_pos, max_pos)
+                    review_cards.insert(insert_pos, current_card)
+                else:
+                    # If queue is too short, append to end
+                    review_cards.append(current_card)
             else:
                 # If queue is empty, just add it
                 review_cards.append(current_card)
