@@ -49,6 +49,8 @@ Unlike traditional spaced repetition systems (like Anki's SM-2), this uses a **s
 
 **Session Completion Required** - Cards rated 1-3 stay in session until rated 4. This ensures active recall rather than passive recognition and prevents gaming the system (you can't just see the answer and rate it "easy").
 
+**Sequential Rating Progression** - Ratings must progress sequentially (1→2→3→4), preventing you from skipping from "Hard" directly to "Easy". This encourages gradual mastery and prevents premature completion. If you rate a card 3, then forget it and rate it 1, you'll need to progress through 1→2→3→4 again. New cards (never seen in the session) can still be rated 1-4 freely.
+
 **Fixed-Distance Reinsertion** - Unlike proportional systems that can bury struggling cards thousands of positions back in large decks, fixed distances work identically for 20 cards or 3000+ cards. Hard cards reappear randomly in positions 2-5 (not immediately) to force cognitive refocusing—the unpredictable brief gap prevents short-term/muscle memory from masquerading as true learning.
 
 **Smart Prioritization** - Active session cards (struggling) appear first, prioritized by attempts and difficulty. Well-mastered cards fade into the background with exponential backoff (consecutive easy sessions multiply intervals exponentially).

@@ -65,12 +65,16 @@ def update_card_after_review(card: Flashcard, rating: int) -> None:
         if card.first_rating is None:
             card.first_rating = rating
         
+        # Update latest rating (can go backwards)
+        card.latest_rating = rating
         card.session_attempts += 1
         card.completed_today = False
         # Don't update metadata yet - wait for rating 4
     
     elif rating == 4:
         # Card is done for session - update metadata based on first rating
+        # Update latest rating before processing completion
+        card.latest_rating = rating
         first_rating = card.first_rating if card.first_rating is not None else 4
         
         # Update metadata based on first rating

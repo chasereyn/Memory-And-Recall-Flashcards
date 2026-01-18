@@ -16,7 +16,8 @@ class Flashcard:
         completed_today: bool = False,
         first_rating: Optional[int] = None,
         session_attempts: int = 0,
-        consecutive_easy_sessions: int = 0
+        consecutive_easy_sessions: int = 0,
+        latest_rating: Optional[int] = None
     ):
         self.id = id
         self.term = term
@@ -29,6 +30,7 @@ class Flashcard:
         self.first_rating = first_rating
         self.session_attempts = session_attempts
         self.consecutive_easy_sessions = consecutive_easy_sessions
+        self.latest_rating = latest_rating
     
     def to_dict(self) -> dict:
         """Convert flashcard to dictionary for JSON serialization."""
@@ -43,7 +45,8 @@ class Flashcard:
             "completed_today": self.completed_today,
             "first_rating": self.first_rating,
             "session_attempts": self.session_attempts,
-            "consecutive_easy_sessions": self.consecutive_easy_sessions
+            "consecutive_easy_sessions": self.consecutive_easy_sessions,
+            "latest_rating": self.latest_rating
         }
     
     @classmethod
@@ -60,13 +63,15 @@ class Flashcard:
             completed_today=data.get("completed_today", False),
             first_rating=data.get("first_rating"),
             session_attempts=data.get("session_attempts", 0),
-            consecutive_easy_sessions=data.get("consecutive_easy_sessions", 0)
+            consecutive_easy_sessions=data.get("consecutive_easy_sessions", 0),
+            latest_rating=data.get("latest_rating")
         )
     
     def reset_session(self):
         """Reset session-specific fields."""
         self.first_rating = None
         self.session_attempts = 0
+        self.latest_rating = None
     
     def start_session(self):
         """Initialize card for a new session."""
