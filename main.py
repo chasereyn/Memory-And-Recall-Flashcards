@@ -16,11 +16,33 @@ from spaced_repetition import (
     get_deck_session_info,
     reset_daily_flags,
     get_today,
+    DEFAULT_DAILY_LIMIT,
+    get_daily_slots_used,
 )
 import random
 
 # Set True to show overdue backlog in the deck menu (e.g. "Backlog: 523")
 SHOW_BACKLOG_IN_MENU = False
+
+# Decks shown in the menu (others still sync on startup). Empty list = show all.
+VISIBLE_DECKS = ["spanish"]
+
+# Per-deck daily new-card cap; unset decks use DEFAULT_DAILY_LIMIT.
+DECK_DAILY_LIMITS = {"spanish": 50}
+
+
+def get_daily_limit(deck_name: str) -> int:
+    return DECK_DAILY_LIMITS.get(deck_name, DEFAULT_DAILY_LIMIT)
+
+
+def ensure_daily_reset(cards, filepath):
+    """On a new calendar day, reset session flags and persist so menu and review agree."""
+    today = get_today()
+    last_session_date = get_last_session_date(filepath)
+    if last_session_date != today:
+        reset_daily_flags(cards, last_session_date, today)
+        save_cards(cards, filepath, update_session_date=True)
+    return today
 
 
 def initialize(deck_name: str):
@@ -87,24 +109,28 @@ def get_user_rating(card):
 
 
 def review_session(cards, filepath):
-    """Run a review session with the given cards."""
-    today = get_today()
-    last_session_date = get_last_session_date(filepath)
-    
-    # Reset daily flags if new day
-    reset_daily_flags(cards, last_session_date, today)
-    
+    """Run a review session with the given cards.
+
+    Returns:
+        'quit' if the user exited early, 'done' if the queue was finished.
+    """
+    today = ensure_daily_reset(cards, filepath)
+    deck_name = get_deck_name_from_file(filepath)
+    daily_limit = get_daily_limit(deck_name)
+
     # Get cards ready for review
-    review_cards = get_cards_for_review(cards, today)
+    review_cards = get_cards_for_review(cards, today, daily_limit=daily_limit)
     
     if not review_cards:
         print("\n" + "=" * 60)
         print("No cards ready for today!")
         print("=" * 60)
-        return
+        return 'done'
     
+    slots_used = get_daily_slots_used(cards)
     print("\n" + "=" * 60)
-    print(f"Starting review session - {len(review_cards)} card(s) ready")
+    print(f"Starting review session - {len(review_cards)} card(s) in queue")
+    print(f"Daily progress: {slots_used} / {daily_limit} cards touched today")
     print("=" * 60)
     print("\nInstructions:")
     print("  - Press Enter to see the definition")
@@ -140,7 +166,7 @@ def review_session(cards, filepath):
         # Get rating
         rating = get_user_rating(current_card)
         if rating is None:
-            break
+            return 'quit'
         if rating == 'delete':
             deck_name = get_deck_name_from_file(filepath)
             cards[:] = delete_card(cards, deck_name, current_card.id)
@@ -234,13 +260,17 @@ def review_session(cards, filepath):
         remaining = initial_card_count - cards_completed
         print(f"  Cards remaining: {remaining}")
     print("=" * 60)
+    return 'done'
 
 
 def get_available_decks():
     """Get list of available deck names from text files."""
     deck_files = get_deck_files()
-    deck_names = [get_deck_name_from_file(f) for f in deck_files]
-    return sorted(deck_names)
+    deck_names = sorted(get_deck_name_from_file(f) for f in deck_files)
+    if VISIBLE_DECKS:
+        visible = set(VISIBLE_DECKS)
+        deck_names = [name for name in deck_names if name in visible]
+    return deck_names
 
 
 def select_deck():
@@ -262,11 +292,11 @@ def select_deck():
         cards = load_cards(json_path)
         total_count = len(cards)
         
-        # Reset daily flags if it's a new day (for accurate counts)
-        last_session_date = get_last_session_date(json_path)
-        reset_daily_flags(cards, last_session_date, today)
+        ensure_daily_reset(cards, json_path)
         
-        today_count, backlog_count = get_deck_session_info(cards, today)
+        today_count, backlog_count = get_deck_session_info(
+            cards, today, daily_limit=get_daily_limit(deck_name)
+        )
         
         deck_info.append({
             'name': deck_name,
@@ -328,7 +358,28 @@ def run():
     
     print(f"\nLoaded {len(cards)} cards from {selected_deck} deck")
     
-    review_session(cards, filepath)
+    while True:
+        cards, filepath = initialize(selected_deck)
+        if not cards:
+            break
+
+        ensure_daily_reset(cards, filepath)
+        daily_limit = get_daily_limit(selected_deck)
+        today = get_today()
+        review_cards = get_cards_for_review(cards, today, daily_limit=daily_limit)
+        if not review_cards:
+            break
+
+        result = review_session(cards, filepath)
+        if result == 'quit':
+            break
+
+        # Resume if cards remain (e.g. quit mid-session earlier)
+        cards, filepath = initialize(selected_deck)
+        ensure_daily_reset(cards, filepath)
+        if not get_cards_for_review(cards, today, daily_limit=daily_limit):
+            break
+        print("\nMore cards left for today — continuing...\n")
     
     return True  # Review complete, show deck selection again
 

@@ -111,3 +111,29 @@ Edit files in `data/decks/` to add or remove cards. Progress in `data/progress/`
 - Python 3.11+
 
 No dependencies required—uses only Python standard library.
+
+## Daily 8:30 AM task
+
+Same pattern as **Sarita Romance Daily** and **DailyConnections** — opens a terminal window; press Enter to close when done.
+
+Register once (PowerShell, from repo root):
+
+```powershell
+.\scripts\install_scheduler.ps1
+```
+
+Creates **MemoryFlashcards Daily Review** — runs `scripts/run_daily.ps1` every morning at **8:30 AM**.
+
+If the PC is asleep or off at 8:30, the task runs **as soon as you log in** after wake (StartWhenAvailable). It will not wake the computer from sleep on its own.
+
+To test immediately:
+
+```powershell
+Start-ScheduledTask -TaskName "MemoryFlashcards Daily Review"
+```
+
+To remove later:
+
+```powershell
+Unregister-ScheduledTask -TaskName "MemoryFlashcards Daily Review" -Confirm:$false
+```

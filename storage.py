@@ -19,9 +19,41 @@ PROGRESS_FIELDNAMES = [
     "session_attempts",
     "consecutive_easy_sessions",
     "latest_rating",
+    "term",
+    "definition",
 ]
 
 SESSION_DATE_PREFIX = "# last_session_date: "
+
+DEFAULT_EASE_FACTOR = 2.5
+DEFAULT_INTERVAL = 1
+
+
+def has_progress(card: Flashcard) -> bool:
+    """True if the card has review state beyond factory defaults."""
+    return (
+        card.next_review is not None
+        or card.ease_factor != DEFAULT_EASE_FACTOR
+        or card.interval != DEFAULT_INTERVAL
+        or card.difficulty != 0
+        or card.completed_today
+        or card.first_rating is not None
+        or card.session_attempts != 0
+        or card.consecutive_easy_sessions != 0
+        or card.latest_rating is not None
+    )
+
+
+def _merge_progress(card: Flashcard, saved: Flashcard) -> None:
+    card.next_review = saved.next_review
+    card.ease_factor = saved.ease_factor
+    card.interval = saved.interval
+    card.difficulty = saved.difficulty
+    card.completed_today = saved.completed_today
+    card.first_rating = saved.first_rating
+    card.session_attempts = saved.session_attempts
+    card.consecutive_easy_sessions = saved.consecutive_easy_sessions
+    card.latest_rating = saved.latest_rating
 
 
 def ensure_data_directory():
@@ -39,7 +71,8 @@ def deck_progress_path(deck_name: str) -> str:
 
 
 def get_deck_name_from_file(filename: str) -> str:
-    """Extract deck name (e.g. 'spanish.tsv' -> 'spanish')."""
+    """Extract deck name (e.g. 'spanish.tsv' or 'data/progress/spanish.tsv' -> 'spanish')."""
+    filename = os.path.basename(filename)
     for suffix in (".tsv", ".txt"):
         if filename.endswith(suffix):
             return filename[: -len(suffix)]
@@ -72,6 +105,8 @@ def _parse_bool(value: str) -> bool:
 
 
 def _apply_progress(card: Flashcard, row: dict) -> None:
+    card.term = row.get("term") or card.term
+    card.definition = row.get("definition") or card.definition
     card.next_review = row.get("next_review") or None
     card.ease_factor = float(row.get("ease_factor") or 2.5)
     card.interval = int(row.get("interval") or 1)
@@ -134,16 +169,7 @@ def load_cards(filepath: str) -> List[Flashcard]:
     cards = []
     for card in content_cards:
         if card.id in progress:
-            saved = progress[card.id]
-            card.next_review = saved.next_review
-            card.ease_factor = saved.ease_factor
-            card.interval = saved.interval
-            card.difficulty = saved.difficulty
-            card.completed_today = saved.completed_today
-            card.first_rating = saved.first_rating
-            card.session_attempts = saved.session_attempts
-            card.consecutive_easy_sessions = saved.consecutive_easy_sessions
-            card.latest_rating = saved.latest_rating
+            _merge_progress(card, progress[card.id])
         cards.append(card)
 
     return cards
@@ -154,6 +180,23 @@ def delete_card(cards: List[Flashcard], deck_name: str, card_id: str) -> List[Fl
     remaining = [card for card in cards if card.id != card_id]
     write_deck_tsv(deck_content_path(deck_name), remaining)
     return remaining
+
+
+def _progress_row(card: Flashcard) -> dict:
+    return {
+        "id": card.id,
+        "next_review": _serialize_value(card.next_review),
+        "ease_factor": _serialize_value(card.ease_factor),
+        "interval": _serialize_value(card.interval),
+        "difficulty": _serialize_value(card.difficulty),
+        "completed_today": _serialize_value(card.completed_today),
+        "first_rating": _serialize_value(card.first_rating),
+        "session_attempts": _serialize_value(card.session_attempts),
+        "consecutive_easy_sessions": _serialize_value(card.consecutive_easy_sessions),
+        "latest_rating": _serialize_value(card.latest_rating),
+        "term": card.term,
+        "definition": card.definition,
+    }
 
 
 def save_cards(cards: List[Flashcard], filepath: str, update_session_date: bool = True):
@@ -169,25 +212,20 @@ def save_cards(cards: List[Flashcard], filepath: str, update_session_date: bool 
     else:
         _, last_session_date = load_progress(deck_name)
 
+    touched = [card for card in cards if has_progress(card)]
+    if not touched and last_session_date is None:
+        if os.path.exists(filepath):
+            os.remove(filepath)
+        return
+
     try:
         with open(filepath, "w", encoding="utf-8", newline="") as f:
             if last_session_date is not None:
                 f.write(f"{SESSION_DATE_PREFIX}{last_session_date}\n")
             writer = csv.DictWriter(f, fieldnames=PROGRESS_FIELDNAMES, delimiter="\t", lineterminator="\n")
             writer.writeheader()
-            for card in cards:
-                writer.writerow({
-                    "id": card.id,
-                    "next_review": _serialize_value(card.next_review),
-                    "ease_factor": _serialize_value(card.ease_factor),
-                    "interval": _serialize_value(card.interval),
-                    "difficulty": _serialize_value(card.difficulty),
-                    "completed_today": _serialize_value(card.completed_today),
-                    "first_rating": _serialize_value(card.first_rating),
-                    "session_attempts": _serialize_value(card.session_attempts),
-                    "consecutive_easy_sessions": _serialize_value(card.consecutive_easy_sessions),
-                    "latest_rating": _serialize_value(card.latest_rating),
-                })
+            for card in touched:
+                writer.writerow(_progress_row(card))
     except Exception as e:
         print(f"Error saving progress to {filepath}: {e}")
 
@@ -212,16 +250,7 @@ def sync_deck(deck_name: str) -> Tuple[int, int, int]:
 
     for card in content_cards:
         if card.id in progress_dict:
-            saved = progress_dict[card.id]
-            card.next_review = saved.next_review
-            card.ease_factor = saved.ease_factor
-            card.interval = saved.interval
-            card.difficulty = saved.difficulty
-            card.completed_today = saved.completed_today
-            card.first_rating = saved.first_rating
-            card.session_attempts = saved.session_attempts
-            card.consecutive_easy_sessions = saved.consecutive_easy_sessions
-            card.latest_rating = saved.latest_rating
+            _merge_progress(card, progress_dict[card.id])
             synced_cards.append(card)
             preserved_count += 1
         else:
@@ -229,7 +258,8 @@ def sync_deck(deck_name: str) -> Tuple[int, int, int]:
             added_count += 1
 
     removed_count = len(existing_ids - content_ids)
-    save_cards(synced_cards, deck_progress_path(deck_name), update_session_date=False)
+    touched_cards = [card for card in synced_cards if has_progress(card)]
+    save_cards(touched_cards, deck_progress_path(deck_name), update_session_date=False)
 
     return preserved_count, added_count, removed_count
 
