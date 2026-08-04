@@ -1,53 +1,25 @@
 import os
 from storage import (
-    load_cards,
-    save_cards,
-    delete_card,
-    ensure_data_directory,
+    load_cards, 
+    save_cards, 
+    ensure_data_directory, 
     get_last_session_date,
     sync_all_decks,
-    get_deck_files,
-    deck_progress_path,
-    get_deck_name_from_file,
+    get_text_files,
+    get_deck_name_from_file
 )
 from spaced_repetition import (
     update_card_after_review,
     get_cards_for_review,
-    get_deck_session_info,
     reset_daily_flags,
     get_today,
-    DEFAULT_DAILY_LIMIT,
-    get_daily_slots_used,
 )
 import random
-
-# Set True to show overdue backlog in the deck menu (e.g. "Backlog: 523")
-SHOW_BACKLOG_IN_MENU = False
-
-# Decks shown in the menu (others still sync on startup). Empty list = show all.
-VISIBLE_DECKS = ["spanish"]
-
-# Per-deck daily new-card cap; unset decks use DEFAULT_DAILY_LIMIT.
-DECK_DAILY_LIMITS = {"spanish": 50}
-
-
-def get_daily_limit(deck_name: str) -> int:
-    return DECK_DAILY_LIMITS.get(deck_name, DEFAULT_DAILY_LIMIT)
-
-
-def ensure_daily_reset(cards, filepath):
-    """On a new calendar day, reset session flags and persist so menu and review agree."""
-    today = get_today()
-    last_session_date = get_last_session_date(filepath)
-    if last_session_date != today:
-        reset_daily_flags(cards, last_session_date, today)
-        save_cards(cards, filepath, update_session_date=True)
-    return today
 
 
 def initialize(deck_name: str):
     """Load cards for a specific deck from JSON file."""
-    json_path = deck_progress_path(deck_name)
+    json_path = f"data/decks/{deck_name}.json"
     cards = load_cards(json_path)
     
     if not cards:
@@ -57,11 +29,14 @@ def initialize(deck_name: str):
     return cards, json_path
 
 
-def get_user_rating(card):
+def get_user_rating(card) -> int:
     """Get user rating with validation, constrained by sequential progression.
-
+    
+    Args:
+        card: Flashcard object to determine allowed rating options
+        
     Returns:
-        int (1-4), 'delete', or None if user quits
+        User's rating (1-4) or None if user quits
     """
     # Determine allowed ratings based on latest_rating
     if card.latest_rating is None:
@@ -84,60 +59,51 @@ def get_user_rating(card):
         # Fallback (shouldn't happen)
         allowed_ratings = [1, 2, 3, 4]
         prompt_options = "1=Hard/Repeat, 2=Medium-Hard, 3=Medium, 4=Easy"
-
-    extra_options = "d=Delete, or 'quit'"
     
     while True:
         try:
-            rating = input(f"Rate difficulty ({prompt_options}, {extra_options}): ").strip().lower()
+            rating = input(f"Rate difficulty ({prompt_options}, or 'quit'): ").strip().lower()
             if rating == 'quit':
                 return None
-            if rating == 'd':
-                return 'delete'
             rating = int(rating)
             if rating in allowed_ratings:
                 return rating
             else:
                 allowed_str = ", ".join(str(r) for r in allowed_ratings)
-                print(f"Please enter a number from [{allowed_str}], d, or 'quit'.")
+                print(f"Please enter a number from [{allowed_str}], or 'quit'.")
         except ValueError:
             allowed_str = ", ".join(str(r) for r in allowed_ratings)
-            print(f"Please enter a valid number from [{allowed_str}], d, or 'quit'.")
+            print(f"Please enter a valid number from [{allowed_str}], or 'quit'.")
         except KeyboardInterrupt:
             print("\nExiting...")
             return None
 
 
 def review_session(cards, filepath):
-    """Run a review session with the given cards.
-
-    Returns:
-        'quit' if the user exited early, 'done' if the queue was finished.
-    """
-    today = ensure_daily_reset(cards, filepath)
-    deck_name = get_deck_name_from_file(filepath)
-    daily_limit = get_daily_limit(deck_name)
-
+    """Run a review session with the given cards."""
+    today = get_today()
+    last_session_date = get_last_session_date(filepath)
+    
+    # Reset daily flags if new day
+    reset_daily_flags(cards, last_session_date, today)
+    
     # Get cards ready for review
-    review_cards = get_cards_for_review(cards, today, daily_limit=daily_limit)
+    review_cards = get_cards_for_review(cards, today)
     
     if not review_cards:
         print("\n" + "=" * 60)
-        print("No cards ready for today!")
+        print("No cards due for review!")
         print("=" * 60)
-        return 'done'
+        return
     
-    slots_used = get_daily_slots_used(cards)
     print("\n" + "=" * 60)
-    print(f"Starting review session - {len(review_cards)} card(s) in queue")
-    print(f"Daily progress: {slots_used} / {daily_limit} cards touched today")
+    print(f"Starting review session - {len(review_cards)} card(s) ready")
     print("=" * 60)
     print("\nInstructions:")
     print("  - Press Enter to see the definition")
     print("  - Rate the card: 1=Hard/Repeat, 2=Medium-Hard, 3=Medium, 4=Easy")
     print("  - You can only advance ratings one step at a time (e.g., 1→2→3→4)")
     print("  - Cards rated 1-3 will be shown again until you rate them 4")
-    print("  - Press 'd' to delete the current card from the deck")
     print("  - Type 'quit' at any time to exit\n")
     
     initial_card_count = len(review_cards)
@@ -166,16 +132,7 @@ def review_session(cards, filepath):
         # Get rating
         rating = get_user_rating(current_card)
         if rating is None:
-            return 'quit'
-        if rating == 'delete':
-            deck_name = get_deck_name_from_file(filepath)
-            cards[:] = delete_card(cards, deck_name, current_card.id)
-            save_cards(cards, filepath)
-            review_cards = [c for c in review_cards if c.id != current_card.id]
-            initial_card_count = len(review_cards)
-            print("\nCard deleted.")
-            print()
-            continue
+            break
         
         # Update card
         update_card_after_review(current_card, rating)
@@ -260,17 +217,13 @@ def review_session(cards, filepath):
         remaining = initial_card_count - cards_completed
         print(f"  Cards remaining: {remaining}")
     print("=" * 60)
-    return 'done'
 
 
 def get_available_decks():
     """Get list of available deck names from text files."""
-    deck_files = get_deck_files()
-    deck_names = sorted(get_deck_name_from_file(f) for f in deck_files)
-    if VISIBLE_DECKS:
-        visible = set(VISIBLE_DECKS)
-        deck_names = [name for name in deck_names if name in visible]
-    return deck_names
+    text_files = get_text_files()
+    deck_names = [get_deck_name_from_file(f) for f in text_files]
+    return sorted(deck_names)
 
 
 def select_deck():
@@ -279,47 +232,45 @@ def select_deck():
     deck_names = get_available_decks()
     
     if not deck_names:
-        print("No decks found. Add .tsv files to the data/decks/ directory.")
+        print("No decks found. Add .txt files to the data/ directory.")
         return None
     
     # Get today's date for calculating due cards
     today = get_today()
     
-    # Calculate deck info for menu display
+    # Calculate deck info (due cards and total cards)
     deck_info = []
     for deck_name in deck_names:
-        json_path = deck_progress_path(deck_name)
+        json_path = f"data/decks/{deck_name}.json"
         cards = load_cards(json_path)
         total_count = len(cards)
         
-        ensure_daily_reset(cards, json_path)
+        # Reset daily flags if it's a new day (for accurate counts)
+        last_session_date = get_last_session_date(json_path)
+        reset_daily_flags(cards, last_session_date, today)
         
-        today_count, backlog_count = get_deck_session_info(
-            cards, today, daily_limit=get_daily_limit(deck_name)
-        )
+        # Get cards due for review
+        due_cards = get_cards_for_review(cards, today)
+        due_count = len(due_cards)
         
         deck_info.append({
             'name': deck_name,
-            'today': today_count,
-            'backlog': backlog_count,
+            'due': due_count,
             'total': total_count
         })
     
     # Find max widths for formatting
     max_name_len = max(len(info['name']) for info in deck_info) if deck_info else 0
-    max_today_digits = max(len(str(info['today'])) for info in deck_info) if deck_info else 0
+    max_due_digits = max(len(str(info['due'])) for info in deck_info) if deck_info else 0
     max_total_digits = max(len(str(info['total'])) for info in deck_info) if deck_info else 0
     
     # Show deck selection with formatted columns (right-aligned numbers)
     print("\nAvailable decks:")
     for i, info in enumerate(deck_info, 1):
         name_padding = ' ' * (max_name_len - len(info['name']))
-        today_str = str(info['today']).rjust(max_today_digits)
+        due_str = str(info['due']).rjust(max_due_digits)
         total_str = str(info['total']).rjust(max_total_digits)
-        line = f"  {i:2d}. {info['name']}{name_padding}    Today: {today_str}    Total: {total_str}"
-        if SHOW_BACKLOG_IN_MENU:
-            line += f"    Backlog: {info['backlog']}"
-        print(line)
+        print(f"  {i:2d}. {info['name']}{name_padding}    Due: {due_str}    Total: {total_str}")
     print("\nType 'exit' to exit")
     
     while True:
@@ -358,28 +309,7 @@ def run():
     
     print(f"\nLoaded {len(cards)} cards from {selected_deck} deck")
     
-    while True:
-        cards, filepath = initialize(selected_deck)
-        if not cards:
-            break
-
-        ensure_daily_reset(cards, filepath)
-        daily_limit = get_daily_limit(selected_deck)
-        today = get_today()
-        review_cards = get_cards_for_review(cards, today, daily_limit=daily_limit)
-        if not review_cards:
-            break
-
-        result = review_session(cards, filepath)
-        if result == 'quit':
-            break
-
-        # Resume if cards remain (e.g. quit mid-session earlier)
-        cards, filepath = initialize(selected_deck)
-        ensure_daily_reset(cards, filepath)
-        if not get_cards_for_review(cards, today, daily_limit=daily_limit):
-            break
-        print("\nMore cards left for today — continuing...\n")
+    review_session(cards, filepath)
     
     return True  # Review complete, show deck selection again
 
@@ -392,7 +322,7 @@ def main():
     sync_all_decks()
     
     print("\n" + "=" * 60)
-    print("MemoryFlashcards")
+    print("Flashcard Program")
     print("=" * 60)
     
     while True:

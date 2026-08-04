@@ -1,6 +1,6 @@
 ---
 name: init
-description: Onboards agents to the MemoryFlashcards repo — personal Spanish flashcard CLI, TSV storage, architecture, decks, review algorithm, and content philosophy. Use when the user runs /init or asks to get up to speed on this project.
+description: Onboards agents to MemoryFlashcards — personal Spanish flashcard CLI, txt/json storage, decks, review algorithm, and content philosophy. Use when the user runs /init or asks to get up to speed on this project.
 disable-model-invocation: true
 ---
 
@@ -10,118 +10,77 @@ When invoked, treat this skill as your baseline context for this repo. Confirm y
 
 ## What this repo is
 
-**MemoryFlashcards** is a **personal Spanish flashcard CLI** — not a generic language app.
+**MemoryFlashcards** is a **personal Spanish flashcard CLI**.
 
-- **Content:** TSV files in `data/decks/` (one card per line: `term\tdefinition`)
-- **Progress:** TSV files in `data/progress/` (review metadata, gitignored — user does not edit)
-- **Stack:** Python 3.11+, stdlib only, no dependencies
+- **Content:** text files in `data/*.txt` (term + definition pairs, blank line between cards)
+- **Storage:** JSON in `data/decks/*.json` (auto-managed, gitignored — do not edit)
+- **Stack:** Python 3.11+, stdlib only
 
 Run: `python main.py` → pick a deck → English prompt → reveal Spanish → rate 1–4.
 
-See `README.md` for file format, sync behavior, and deck overview.
+## Philosophy
 
-## Philosophy (owner intent)
-
-- **Context over grammar** — whole phrases/stories, not rule drills.
-- **Personal over generic** — Sarah, family, Mexico trips, real stories they'll tell.
-- **Mexican Spanish** — natural MX choices, neutral register, light touch (no heavy slang).
-- **Daily habit over marathons** — 10 cards/day per deck; show up every day.
-- **Keep the long vocab list** — `spanish.tsv` is the main cob deck (~8000 cards).
-
-## People & themes
-
-- **Sarah** — girlfriend, Mexico City; **tú** for phrases to her.
-- **Her parents (especially mom)** — in-laws in Mexico; **usted** for questions to/about them.
-- **Themes:** family, CDMX/Sinaloa trips, food, feelings, couple life, work stories.
+- **Context over grammar** — phrases and stories, not rule drills
+- **Personal over generic** — Sarah, family, Mexico trips, real stories
+- **Mexican Spanish** — natural MX choices, neutral register
+- **Keep the long vocab list** — `spanish.txt` is the main deck (~8000 cards)
 
 ## Architecture
 
 | File | Role |
 |------|------|
-| `main.py` | Entry point, deck menu, review session, rating UI, in-session re-insertion |
-| `parser.py` | Parses `data/decks/*.tsv` → flashcards (MD5 id from `term\|definition`) |
-| `flashcard.py` | Card model + serialization helpers |
-| `spaced_repetition.py` | Session-based SRS, daily limit, queue prioritization |
-| `storage.py` | Load/save progress TSV, sync content ↔ progress on startup |
+| `main.py` | Entry point, deck menu, review session |
+| `parser.py` | Parses `data/*.txt` → flashcards |
+| `flashcard.py` | Card model |
+| `spaced_repetition.py` | Session-based SRS, queue prioritization |
+| `storage.py` | JSON load/save, sync txt ↔ json on startup |
 | `test_algorithm.py` | SRS logic tests |
-| `test_sync.py` | Sync tests (critical — run after storage changes) |
 
-**Sync** (`storage.sync_all_decks` on startup): preserve progress for matching ids, add new cards from deck TSV, remove deleted cards.
+**Sync** on startup: preserve progress for matching ids, add new cards from txt, remove deleted cards.
 
-## Active decks (`data/decks/`)
+## Decks (`data/*.txt`)
 
-| Deck | ~Cards | Notes |
-|------|--------|-------|
-| `spanish.tsv` | 8000+ | Main vocab — one English prompt, one Spanish answer per line |
-| `verbs.tsv` | 370 | Construction-first grammar example sentences |
-| `english.tsv` | 530+ | English vocabulary — minimal-swap paired sentences (see `english` skill) |
-| `DOP.tsv` | 56 | Direct/indirect object pronouns |
-| `numbers.tsv` | 100 | Spanish numbers 1–100 (digit → Spanish) |
-| `jokes.tsv` | 210+ | English jokes |
-| `flirt.tsv` | 60 | Pick-up lines, pet names, couple talk |
-| `chistes.tsv` | 40 | Spanish wordplay jokes |
-| `longphrases.tsv` | 5 | Memorized quotes and long phrases |
-| `lawsofpower.tsv` | 48 | The 48 Laws of Power (number → law) |
-| `mexican.tsv` | 158 | Mexican food, culture, traditions, geography, history, brands (English descriptions) |
+| Deck | Notes |
+|------|-------|
+| `spanish.txt` | Main vocab — English prompt → Spanish answer |
+| `verbs.txt` | Grammar construction example sentences (hand-maintained) |
+| `english.txt` | English vocab — minimal-swap paired sentences (see `english` skill) |
+| `mexican.txt` | Mexican food, culture, geography — English descriptions |
+| `DOP.txt`, `numbers.txt`, `jokes.txt`, `flirt.txt`, `chistes.txt`, `slang.txt`, `longphrases.txt`, `lawsofpower.txt` | Side decks |
 
-Only `data/decks/*.tsv` become decks. Progress mirrors deck names in `data/progress/`.
-
-## Card format (default deck)
+## Card format (default)
 
 ```
-term	definition
-Roof	Tejado
-I'm joking	estoy bromeando
-```
+English prompt
+Spanish answer
 
-Header row `term\tdefinition` is optional. Append new rows at the **tail** only unless asked otherwise.
+Next prompt
+Next answer
+```
 
 ## Review algorithm
 
-Session-based (not Anki SM-2). Cards must **finish the session** (reach rating 4) before long-term scheduling applies.
+Session-based (not Anki SM-2). Cards must reach rating **4** to complete a session.
 
-**Ratings:** 1=Hard, 2=Medium-Hard, 3=Medium, 4=Easy (session complete).
+**Ratings:** 1=Hard, 2=Medium-Hard, 3=Medium, 4=Easy
 
-**Session rules:**
-- Progress **1 → 2 → 3 → 4** within a session (can drop back to 1).
-- Ratings **1–3** keep the card in session; only **4** completes it for today.
-- **First rating** drives long-term metadata when you hit 4 — not the last rating.
-- Re-insertion (fixed distances, not % of deck):
-  - **1:** random position 2–5 ahead
-  - **2:** 10–25 cards ahead
-  - **3:** 20–40 cards ahead
-  - **4:** done; exponential backoff on consecutive easy sessions
-
-**Daily limit:** `DEFAULT_DAILY_LIMIT = 10` in `spaced_repetition.py`. Max **10 new due cards** introduced per deck per day (fixed pool; no refill when one completes). Active in-session cards always included. Reinsertions from 1–3 do not consume extra slots.
-
-**Queue order:** active session (struggling first) → **shuffled due cards** (daily cap 10).
-
-**Deck menu:** shows `Today: N` and `Total: N`. Set `SHOW_BACKLOG_IN_MENU = True` in `main.py` to also show overdue backlog count.
+- Progress **1 → 2 → 3 → 4** within a session (can drop back to 1)
+- **First rating** drives long-term scheduling when you hit 4
+- Re-insertion: 1 → positions 2–5; 2 → 10–25 ahead; 3 → 20–40 ahead; 4 → done
+- All due cards appear in session (no daily cap)
 
 ## How to help
 
-- **Extend content** at the **tail** of deck TSV files — do not rewrite existing cards unless asked.
-- **Spanish vocab:** use the `spanish` skill for `data/decks/spanish.tsv`.
-- **English vocab:** use the `english` skill for `data/decks/english.tsv`.
-- **Mexican culture deck:** use the `mexican` skill for `data/decks/mexican.tsv`.
-- **Code:** match existing style; minimal diffs; no over-engineering.
-- **Windows:** PowerShell — chain with `;`, not `&&`.
-- **Git:** commit only when explicitly asked.
+- **Extend content** at the **tail** of `data/*.txt` — do not rewrite existing cards unless asked
+- Use deck-specific skills: `spanish`, `english`, `mexican`
+- **Windows:** PowerShell — chain with `;`, not `&&`
+- **Git:** commit only when explicitly asked
 
 ## Do not
 
-- Edit files in `data/progress/` by hand.
-- Bulk-rewrite register (tú/usted) on old cards without being asked.
-
-## Related skills
-
-| Skill | When |
-|-------|------|
-| `spanish` | Appending/formatting `data/decks/spanish.tsv` |
-| `english` | Appending/formatting `data/decks/english.tsv` |
-| `mexican` | Appending/formatting `data/decks/mexican.tsv` |
-| `init` | This file — project orientation |
+- Edit `data/decks/*.json` by hand
+- Bulk-rewrite register (tú/usted) on old cards without being asked
 
 ## After /init
 
-Reply briefly that you understand MemoryFlashcards and are ready. Mention: TSV decks in `data/decks/`, progress in `data/progress/`, session SRS with 10/day cap per deck, and tail-only edits. Ask what they want to work on.
+Reply briefly that you understand MemoryFlashcards and are ready. Ask what they want to work on.

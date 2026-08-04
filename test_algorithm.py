@@ -1,5 +1,4 @@
 """Test script for spaced repetition algorithm."""
-import random
 from flashcard import Flashcard
 from spaced_repetition import (
     update_card_after_review,
@@ -7,9 +6,7 @@ from spaced_repetition import (
     get_due_cards,
     prioritize_cards,
     get_cards_for_review,
-    get_deck_session_info,
-    get_today,
-    DEFAULT_DAILY_LIMIT,
+    get_today
 )
 
 
@@ -117,100 +114,6 @@ def test_multiple_ratings_before_4():
     print("PASSED\n")
 
 
-def test_daily_limit_caps_due_cards():
-    """Test that daily limit caps due cards but always includes active cards."""
-    print("Test 6: Daily limit caps due cards")
-    today = get_today()
-
-    active = Flashcard(id="active", term="Active", definition="Answer")
-    active.first_rating = 1
-    active.session_attempts = 1
-    active.completed_today = False
-
-    due_cards = [
-        Flashcard(id=f"due{i}", term=f"Due {i}", definition="Answer", next_review=today)
-        for i in range(50)
-    ]
-    all_cards = [active] + due_cards
-
-    review = get_cards_for_review(all_cards, today, daily_limit=DEFAULT_DAILY_LIMIT)
-
-    assert review[0].id == "active", "Active card should come first"
-    assert len(review) == DEFAULT_DAILY_LIMIT, "Active card uses a daily slot; total queue capped at daily limit"
-    due_in_review = [c for c in review if c.id != "active"]
-    assert len(due_in_review) == DEFAULT_DAILY_LIMIT - 1, "Remaining slots go to due cards"
-    assert len({c.id for c in due_in_review}) == DEFAULT_DAILY_LIMIT - 1, "Due cards in session should be unique"
-    print("PASSED\n")
-
-
-def test_deck_session_info():
-    """Test today vs backlog counts for deck menu."""
-    print("Test 7: Deck session info counts")
-    today = get_today()
-
-    due_cards = [
-        Flashcard(id=f"due{i}", term=f"Due {i}", definition="Answer", next_review=today)
-        for i in range(100)
-    ]
-
-    today_count, backlog = get_deck_session_info(due_cards, today, daily_limit=DEFAULT_DAILY_LIMIT)
-
-    assert today_count == DEFAULT_DAILY_LIMIT, "Today count should be capped at daily limit"
-    assert backlog == 100, "Backlog should reflect all due cards"
-    print("PASSED\n")
-
-
-def test_daily_limit_after_completing_cards():
-    """Test that completing the daily limit blocks further reviews until tomorrow."""
-    print("Test 9: Daily limit blocks new cards after completing today's pool")
-    today = get_today()
-
-    due_cards = [
-        Flashcard(
-            id=f"due{i}",
-            term=f"Due {i}",
-            definition="Answer",
-            next_review="2099-01-01",
-            completed_today=True,
-        )
-        for i in range(DEFAULT_DAILY_LIMIT)
-    ]
-    remaining_due = [
-        Flashcard(id=f"backlog{i}", term=f"Backlog {i}", definition="Answer", next_review=today)
-        for i in range(20)
-    ]
-    all_cards = due_cards + remaining_due
-
-    review = get_cards_for_review(all_cards, today, daily_limit=DEFAULT_DAILY_LIMIT)
-    today_count, backlog = get_deck_session_info(all_cards, today, daily_limit=DEFAULT_DAILY_LIMIT)
-
-    assert len(review) == 0, "No cards should be available after daily limit is used"
-    assert today_count == 0, "Today count should be 0 after daily limit is used"
-    assert backlog == 20, "Backlog should still reflect remaining due cards"
-    print("PASSED\n")
-
-
-def test_due_cards_are_shuffled():
-    """Due cards should be randomized, not new-first or oldest-first."""
-    print("Test 8: Due cards are shuffled")
-    today = get_today()
-
-    cards = [
-        Flashcard(id="old", term="Old", definition="Answer", next_review="2024-01-01"),
-        Flashcard(id="recent", term="Recent", definition="Answer", next_review="2026-07-01"),
-        Flashcard(id="new", term="New", definition="Answer"),
-        Flashcard(id="mid", term="Mid", definition="Answer", next_review=today),
-    ]
-
-    orders = set()
-    for seed in range(20):
-        random.seed(seed)
-        orders.add(tuple(c.id for c in prioritize_cards([], cards)))
-
-    assert len(orders) > 1, "Due queue should vary across shuffles"
-    print("PASSED\n")
-
-
 if __name__ == "__main__":
     print("=" * 60)
     print("Testing Spaced Repetition Algorithm")
@@ -223,10 +126,6 @@ if __name__ == "__main__":
         test_rating_4_immediate_easy()
         test_priority_sorting()
         test_multiple_ratings_before_4()
-        test_daily_limit_caps_due_cards()
-        test_deck_session_info()
-        test_daily_limit_after_completing_cards()
-        test_due_cards_are_shuffled()
         
         print("=" * 60)
         print("All tests passed!")

@@ -1,14 +1,16 @@
-# MemoryFlashcards
+# CCC - Flashcard Learning System
 
-A personal spaced-repetition flashcard CLI with automatic syncing and a session-based review algorithm, built for effective vocabulary and phrase learning.
+A spaced repetition flashcard system with automatic syncing and a unique session-based algorithm designed for effective vocabulary learning.
 
 ## Quick Start
 
-1. **Add your vocabulary**: Create TSV files in `data/decks/`. One card per line — tab-separated prompt and answer:
+1. **Add your vocabulary**: Create text files (`.txt`) in the `data/` directory. Each file represents a deck. Format: term and definition on consecutive lines:
    ```
-   term	definition
-   Roof	Tejado
-   Step aside!	Golpe avisa!
+   Roof
+   Tejado
+   
+   Step aside!
+   Golpe avisa!
    ```
 
 2. **Run the program**:
@@ -24,12 +26,12 @@ That's it! No setup required—just add your vocabulary and run the program.
 
 ### Automatic Syncing
 
-The system automatically syncs deck content (`.tsv`) with progress storage on startup. It:
+The system automatically syncs your text files with JSON storage on startup. It:
 - **Preserves** cards that exist in both (keeps your progress and review history)
-- **Adds** new cards from deck TSV files
-- **Removes** cards that you've deleted from deck TSV files
+- **Adds** new cards from text files
+- **Removes** cards that you've deleted from text files
 
-Your review progress is never lost—only the source content (deck TSV) is synced, while all learning metadata stays intact.
+Your review progress is never lost—only the source content (text files) is synced, while all learning metadata stays intact.
 
 ### Session-Based Algorithm
 
@@ -51,60 +53,22 @@ Unlike traditional spaced repetition systems (like Anki's SM-2), this uses a **s
 
 **Fixed-Distance Reinsertion** - Unlike proportional systems that can bury struggling cards thousands of positions back in large decks, fixed distances work identically for 20 cards or 3000+ cards. Hard cards reappear randomly in positions 2-5 (not immediately) to force cognitive refocusing—the unpredictable brief gap prevents short-term/muscle memory from masquerading as true learning.
 
-**Smart Prioritization** - Active session cards (struggling) appear first. Due cards are shuffled each session so bulk-added content does not play out in one block. Well-mastered cards fade into the background with exponential backoff (consecutive easy sessions multiply intervals exponentially).
+**Smart Prioritization** - Active session cards (struggling) appear first, prioritized by attempts and difficulty. Well-mastered cards fade into the background with exponential backoff (consecutive easy sessions multiply intervals exponentially).
 
 **Adaptive Difficulty Tracking** - Struggle history is tracked separately from intervals, ensuring difficult material gets frequent reviews even when intervals suggest otherwise.
-
-**Daily Session Limit** - Each deck introduces at most **10 due cards per day** (configurable via `DEFAULT_DAILY_LIMIT` in `spaced_repetition.py`). Active in-session cards are always included; reinsertions from ratings 1–3 do not pull extra cards from the backlog. Remaining due cards stay queued for future days — show up daily rather than marathon sessions. Set `SHOW_BACKLOG_IN_MENU = True` in `main.py` to display the full overdue count in the deck menu.
-
-## Decks
-
-All decks live in `data/decks/` as `*.tsv` files. Main decks:
-
-| Deck | Purpose |
-|------|---------|
-| `spanish.tsv` | Main vocabulary — English prompt → Spanish answer |
-| `verbs.tsv` | Grammar constructions — full example sentences |
-| `english.tsv` | English vocabulary — minimal-swap paired sentences |
-| `mexican.tsv` | Mexican food, culture, geography — English descriptions |
-| `numbers.tsv` | Digits 1–100 → Spanish number words |
-| `DOP.tsv` | Direct/indirect object pronoun drills |
-| `flirt.tsv`, `jokes.tsv`, `chistes.tsv` | Couple talk, English jokes, Spanish wordplay |
-| `lawsofpower.tsv`, `longphrases.tsv` | Side decks |
-
-Progress mirrors deck names in `data/progress/` (auto-managed, gitignored).
-
-## Verbs deck
-
-`data/decks/verbs.tsv` is **hand-maintained**. Cards are grouped by **construction** (preterite sampler, imperfect, subjunctive triggers, accidental se, etc.) — not by conjugation grids.
-
-When adding a new construction block:
-
-- Pick verbs from `full_verb_list.txt` that sound **natural** with that pattern.
-- **Append** new rows at the end — blank lines between blocks are fine.
-- One English prompt, one Spanish answer per line.
-- Vary subjects and mix in clitics where the pattern allows.
-- Match the short narrative style already in the file.
-
-## English deck
-
-`data/decks/english.tsv` uses **two TSV rows per vocabulary item**: gloss → headword, then a plain example sentence → the same sentence with only the headword swapped in. See `.cursor/skills/english/SKILL.md` for the full pattern.
 
 ## File Structure
 
 ```
 data/
-  ├── decks/           # Deck content — edit these (one card per line)
-  │   ├── spanish.tsv
-  │   ├── verbs.tsv
-  │   └── ...
-  └── progress/        # Review state (auto-managed, gitignored)
-      ├── spanish.tsv
-      ├── verbs.tsv
-      └── ...
+  ├── spanish_vocab.txt        # Your text decks
+  ├── english_jokes.txt
+  └── decks/
+      ├── spanish_vocab.json    # Auto-generated (don't edit)
+      └── english_jokes.json
 ```
 
-Edit files in `data/decks/` to add or remove cards. Progress in `data/progress/` is managed automatically on startup.
+Edit the text files to add or remove vocabulary. The JSON files are automatically managed by the sync system.
 
 ## Requirements
 
@@ -112,28 +76,3 @@ Edit files in `data/decks/` to add or remove cards. Progress in `data/progress/`
 
 No dependencies required—uses only Python standard library.
 
-## Daily 8:30 AM task
-
-Same pattern as **Sarita Romance Daily** and **DailyConnections** — opens a terminal window; press Enter to close when done.
-
-Register once (PowerShell, from repo root):
-
-```powershell
-.\scripts\install_scheduler.ps1
-```
-
-Creates **MemoryFlashcards Daily Review** — runs `scripts/run_daily.ps1` every morning at **8:30 AM**.
-
-If the PC is asleep or off at 8:30, the task runs **as soon as you log in** after wake (StartWhenAvailable). It will not wake the computer from sleep on its own.
-
-To test immediately:
-
-```powershell
-Start-ScheduledTask -TaskName "MemoryFlashcards Daily Review"
-```
-
-To remove later:
-
-```powershell
-Unregister-ScheduledTask -TaskName "MemoryFlashcards Daily Review" -Confirm:$false
-```

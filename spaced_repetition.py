@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-import random
 from typing import List, Optional
 from flashcard import Flashcard
 
@@ -14,7 +13,6 @@ EASE_FACTOR_DECREASE_EASY = 0.05
 EASE_FACTOR_DECREASE_MEDIUM = 0.15
 EASE_FACTOR_DECREASE_HARD = 0.25
 BACKOFF_BASE = 1.5  # Exponential backoff multiplier
-DEFAULT_DAILY_LIMIT = 2  # Max new due cards introduced per deck per day
 
 
 def get_today() -> str:
@@ -158,45 +156,33 @@ def get_due_cards(cards: List[Flashcard], today: Optional[str] = None) -> List[F
 
 def prioritize_cards(active_cards: List[Flashcard], due_cards: List[Flashcard]) -> List[Flashcard]:
     """
-    Build review queue: active in-session cards first, then due cards in random order.
-
-    Active cards (rated 1–3, not yet 4) stay sorted by session_attempts and difficulty
-    so struggling cards come back quickly.
-
-    Due cards are shuffled so bulk-added decks (e.g. medical vocab) do not play out
-    as one long sequential block weeks later.
+    Prioritize cards for review.
+    Active cards (in session) come first, then due cards (new session).
+    
+    Active cards sorted by:
+    1. session_attempts (descending) - cards attempted more times first
+    2. difficulty (descending) - struggling cards first
+    
+    Due cards sorted by:
+    1. difficulty (descending) - struggling cards first
+    2. next_review (ascending, None first) - oldest due dates first
     """
+    # Sort active cards
     active_sorted = sorted(
         active_cards,
         key=lambda c: (c.session_attempts, c.difficulty),
-        reverse=True,
+        reverse=True
     )
-
-    due_shuffled = list(due_cards)
-    random.shuffle(due_shuffled)
-
-    return active_sorted + due_shuffled
-
-
-def get_daily_slots_used(cards: List[Flashcard]) -> int:
-    """
-    Count cards that have consumed a daily slot today.
-
-    A slot is used when a card is in an active session (rated 1-3) or
-    completed for today (rated 4). Re-insertions from 1-3 do not use extra slots.
-    """
-    return len([
-        card for card in cards
-        if card.completed_today or card.first_rating is not None
-    ])
-
-
-def get_remaining_daily_slots(
-    cards: List[Flashcard],
-    daily_limit: int = DEFAULT_DAILY_LIMIT,
-) -> int:
-    """Return how many new due cards can still be introduced today."""
-    return max(0, daily_limit - get_daily_slots_used(cards))
+    
+    # Sort due cards
+    def due_sort_key(card: Flashcard):
+        next_rev = card.next_review if card.next_review else "0000-01-01"  # None comes first
+        return (-card.difficulty, next_rev)
+    
+    due_sorted = sorted(due_cards, key=due_sort_key)
+    
+    # Active cards first, then due cards
+    return active_sorted + due_sorted
 
 
 def reset_daily_flags(cards: List[Flashcard], last_session_date: Optional[str], today: Optional[str] = None) -> None:
@@ -216,52 +202,22 @@ def reset_daily_flags(cards: List[Flashcard], last_session_date: Optional[str], 
             card.reset_session()
 
 
-def get_deck_session_info(
-    cards: List[Flashcard],
-    today: Optional[str] = None,
-    daily_limit: int = DEFAULT_DAILY_LIMIT,
-) -> tuple[int, int]:
+def get_cards_for_review(cards: List[Flashcard], today: Optional[str] = None) -> List[Flashcard]:
     """
-    Return (today_count, backlog_count) for deck menu display.
-
-    today_count: cards that will enter today's session (active + capped due).
-    backlog_count: total due cards not yet scheduled for today (hidden by default in UI).
+    Get all cards ready for review, properly prioritized.
+    Combines active cards (in session) and due cards (new session).
+    Active cards are excluded from due cards to prevent duplicates.
     """
     if today is None:
         today = get_today()
-
+    
     active = get_active_cards(cards)
     active_ids = {card.id for card in active}
+    
+    # Exclude active cards from due cards to prevent duplicates
     due = [card for card in get_due_cards(cards, today) if card.id not in active_ids]
-    backlog_count = len(due)
-    remaining_slots = get_remaining_daily_slots(cards, daily_limit)
-    today_count = len(active) + min(backlog_count, remaining_slots)
-    return today_count, backlog_count
-
-
-def get_cards_for_review(
-    cards: List[Flashcard],
-    today: Optional[str] = None,
-    daily_limit: int = DEFAULT_DAILY_LIMIT,
-) -> List[Flashcard]:
-    """
-    Get cards ready for review.
-
-    Active in-session cards are always included first. Due cards are shuffled and
-    capped at daily_limit (fixed pool for the day; no refill when cards complete).
-    """
-    if today is None:
-        today = get_today()
-
-    active = get_active_cards(cards)
-    active_ids = {card.id for card in active}
-
-    due = [card for card in get_due_cards(cards, today) if card.id not in active_ids]
-    prioritized_due = prioritize_cards([], due)
-
-    remaining_slots = get_remaining_daily_slots(cards, daily_limit)
-    capped_due = prioritized_due[:remaining_slots]
-    return prioritize_cards(active, capped_due)
+    
+    return prioritize_cards(active, due)
 
 
 def is_card_in_session(card: Flashcard) -> bool:

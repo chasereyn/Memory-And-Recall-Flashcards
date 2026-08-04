@@ -1,295 +1,161 @@
-import csv
-import glob
 import json
 import os
+import glob
 from datetime import datetime
 from typing import List, Optional, Tuple
-
 from flashcard import Flashcard
-from parser import parse_deck_tsv, write_deck_tsv
-
-PROGRESS_FIELDNAMES = [
-    "id",
-    "next_review",
-    "ease_factor",
-    "interval",
-    "difficulty",
-    "completed_today",
-    "first_rating",
-    "session_attempts",
-    "consecutive_easy_sessions",
-    "latest_rating",
-    "term",
-    "definition",
-]
-
-SESSION_DATE_PREFIX = "# last_session_date: "
-
-DEFAULT_EASE_FACTOR = 2.5
-DEFAULT_INTERVAL = 1
-
-
-def has_progress(card: Flashcard) -> bool:
-    """True if the card has review state beyond factory defaults."""
-    return (
-        card.next_review is not None
-        or card.ease_factor != DEFAULT_EASE_FACTOR
-        or card.interval != DEFAULT_INTERVAL
-        or card.difficulty != 0
-        or card.completed_today
-        or card.first_rating is not None
-        or card.session_attempts != 0
-        or card.consecutive_easy_sessions != 0
-        or card.latest_rating is not None
-    )
-
-
-def _merge_progress(card: Flashcard, saved: Flashcard) -> None:
-    card.next_review = saved.next_review
-    card.ease_factor = saved.ease_factor
-    card.interval = saved.interval
-    card.difficulty = saved.difficulty
-    card.completed_today = saved.completed_today
-    card.first_rating = saved.first_rating
-    card.session_attempts = saved.session_attempts
-    card.consecutive_easy_sessions = saved.consecutive_easy_sessions
-    card.latest_rating = saved.latest_rating
+from parser import parse_text_file
 
 
 def ensure_data_directory():
-    """Create data directories if they don't exist."""
+    """Create data directory and decks subdirectory if they don't exist."""
+    os.makedirs("data", exist_ok=True)
     os.makedirs("data/decks", exist_ok=True)
-    os.makedirs("data/progress", exist_ok=True)
-
-
-def deck_content_path(deck_name: str) -> str:
-    return f"data/decks/{deck_name}.tsv"
-
-
-def deck_progress_path(deck_name: str) -> str:
-    return f"data/progress/{deck_name}.tsv"
 
 
 def get_deck_name_from_file(filename: str) -> str:
-    """Extract deck name (e.g. 'spanish.tsv' or 'data/progress/spanish.tsv' -> 'spanish')."""
-    filename = os.path.basename(filename)
-    for suffix in (".tsv", ".txt"):
-        if filename.endswith(suffix):
-            return filename[: -len(suffix)]
+    """Extract deck name from filename (e.g., 'spanish_vocab.txt' -> 'spanish_vocab')."""
+    # Remove .txt extension and return
+    if filename.endswith('.txt'):
+        return filename[:-4]
     return filename
 
 
-def get_deck_files() -> List[str]:
-    """Get deck content TSV filenames in data/decks/."""
-    pattern = os.path.join("data", "decks", "*.tsv")
-    return [os.path.basename(f) for f in glob.glob(pattern)]
-
-
-def _serialize_value(value) -> str:
-    if value is None:
-        return ""
-    if isinstance(value, bool):
-        return "true" if value else "false"
-    return str(value)
-
-
-def _parse_optional_int(value: str) -> Optional[int]:
-    value = (value or "").strip()
-    if not value:
-        return None
-    return int(value)
-
-
-def _parse_bool(value: str) -> bool:
-    return (value or "").strip().lower() in ("true", "1", "yes")
-
-
-def _apply_progress(card: Flashcard, row: dict) -> None:
-    card.term = row.get("term") or card.term
-    card.definition = row.get("definition") or card.definition
-    card.next_review = row.get("next_review") or None
-    card.ease_factor = float(row.get("ease_factor") or 2.5)
-    card.interval = int(row.get("interval") or 1)
-    card.difficulty = int(row.get("difficulty") or 0)
-    card.completed_today = _parse_bool(row.get("completed_today", ""))
-    card.first_rating = _parse_optional_int(row.get("first_rating", ""))
-    card.session_attempts = int(row.get("session_attempts") or 0)
-    card.consecutive_easy_sessions = int(row.get("consecutive_easy_sessions") or 0)
-    card.latest_rating = _parse_optional_int(row.get("latest_rating", ""))
-
-
-def load_progress(deck_name: str) -> Tuple[dict[str, Flashcard], Optional[str]]:
-    """Load progress metadata keyed by card id. Returns (progress_dict, last_session_date)."""
-    path = deck_progress_path(deck_name)
-    if not os.path.exists(path):
-        return {}, None
-
-    progress = {}
-    last_session_date = None
-
-    try:
-        with open(path, "r", encoding="utf-8", newline="") as f:
-            for line in f:
-                if line.startswith(SESSION_DATE_PREFIX):
-                    last_session_date = line[len(SESSION_DATE_PREFIX) :].strip()
-                    break
-
-        with open(path, "r", encoding="utf-8", newline="") as f:
-            reader = csv.DictReader(
-                (row for row in f if not row.startswith("#")),
-                delimiter="\t",
-            )
-            for row in reader:
-                if not row.get("id"):
-                    continue
-                card = Flashcard(id=row["id"], term="", definition="")
-                _apply_progress(card, row)
-                progress[card.id] = card
-    except Exception as e:
-        print(f"Error loading progress from {path}: {e}")
-        return {}, last_session_date
-
-    return progress, last_session_date
+def get_text_files() -> List[str]:
+    """Get all .txt files in the data directory."""
+    text_files = []
+    data_dir = "data"
+    
+    if os.path.exists(data_dir):
+        # Find all .txt files in data/ (not in subdirectories)
+        pattern = os.path.join(data_dir, "*.txt")
+        text_files = [os.path.basename(f) for f in glob.glob(pattern)]
+    
+    return text_files
 
 
 def load_cards(filepath: str) -> List[Flashcard]:
     """
-    Load flashcards for a deck by merging content TSV + progress TSV.
-    filepath should be the progress path (legacy signature kept for main.py).
+    Load flashcards from JSON file.
+    Returns empty list if file doesn't exist.
     """
-    deck_name = os.path.basename(filepath).replace(".tsv", "").replace(".json", "")
-    content_path = deck_content_path(deck_name)
-
-    if not os.path.exists(content_path):
+    if not os.path.exists(filepath):
+        return []
+    
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        cards = []
+        for card_data in data.get("cards", []):
+            cards.append(Flashcard.from_dict(card_data))
+        
+        return cards
+    except Exception as e:
+        print(f"Error loading cards from {filepath}: {e}")
         return []
 
-    content_cards = parse_deck_tsv(content_path)
-    progress, _ = load_progress(deck_name)
 
-    cards = []
-    for card in content_cards:
-        if card.id in progress:
-            _merge_progress(card, progress[card.id])
-        cards.append(card)
-
-    return cards
-
-
-def delete_card(cards: List[Flashcard], deck_name: str, card_id: str) -> List[Flashcard]:
-    """Remove a card from deck content and return the updated in-memory list."""
-    remaining = [card for card in cards if card.id != card_id]
-    write_deck_tsv(deck_content_path(deck_name), remaining)
-    return remaining
-
-
-def _progress_row(card: Flashcard) -> dict:
-    return {
-        "id": card.id,
-        "next_review": _serialize_value(card.next_review),
-        "ease_factor": _serialize_value(card.ease_factor),
-        "interval": _serialize_value(card.interval),
-        "difficulty": _serialize_value(card.difficulty),
-        "completed_today": _serialize_value(card.completed_today),
-        "first_rating": _serialize_value(card.first_rating),
-        "session_attempts": _serialize_value(card.session_attempts),
-        "consecutive_easy_sessions": _serialize_value(card.consecutive_easy_sessions),
-        "latest_rating": _serialize_value(card.latest_rating),
-        "term": card.term,
-        "definition": card.definition,
-    }
-
-
-def save_cards(cards: List[Flashcard], filepath: str, update_session_date: bool = True):
-    """Save review progress to TSV (content file is edited separately)."""
+def save_cards(cards: List[Flashcard], filepath: str):
+    """Save flashcards to JSON file."""
     ensure_data_directory()
+    
+    # Ensure the directory exists
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
-
-    deck_name = os.path.basename(filepath).replace(".tsv", "").replace(".json", "")
-    filepath = deck_progress_path(deck_name)
-
-    if update_session_date:
-        last_session_date = datetime.now().strftime("%Y-%m-%d")
-    else:
-        _, last_session_date = load_progress(deck_name)
-
-    touched = [card for card in cards if has_progress(card)]
-    if not touched and last_session_date is None:
-        if os.path.exists(filepath):
-            os.remove(filepath)
-        return
-
+    
+    data = {
+        "cards": [card.to_dict() for card in cards],
+        "last_session_date": datetime.now().strftime("%Y-%m-%d")
+    }
+    
     try:
-        with open(filepath, "w", encoding="utf-8", newline="") as f:
-            if last_session_date is not None:
-                f.write(f"{SESSION_DATE_PREFIX}{last_session_date}\n")
-            writer = csv.DictWriter(f, fieldnames=PROGRESS_FIELDNAMES, delimiter="\t", lineterminator="\n")
-            writer.writeheader()
-            for card in touched:
-                writer.writerow(_progress_row(card))
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
     except Exception as e:
-        print(f"Error saving progress to {filepath}: {e}")
+        print(f"Error saving cards to {filepath}: {e}")
 
 
-def sync_deck(deck_name: str) -> Tuple[int, int, int]:
+def sync_deck_from_text(text_path: str, deck_name: str) -> Tuple[int, int, int]:
     """
-    Sync deck content TSV with progress TSV.
-
+    Sync a deck from text file to JSON file.
+    
+    Args:
+        text_path: Path to the text file
+        deck_name: Name of the deck (used for JSON filename)
+    
     Returns:
         Tuple of (preserved_count, added_count, removed_count)
     """
-    content_path = deck_content_path(deck_name)
-    content_cards = parse_deck_tsv(content_path)
-    content_ids = {card.id for card in content_cards}
-
-    progress_dict, _ = load_progress(deck_name)
-    existing_ids = set(progress_dict)
-
+    # Parse text file to get cards
+    text_cards = parse_text_file(text_path)
+    text_ids = {card.id for card in text_cards}
+    
+    # Load existing JSON cards
+    json_path = f"data/decks/{deck_name}.json"
+    existing_cards = load_cards(json_path)
+    existing_ids = {card.id for card in existing_cards}
+    
+    # Create a dictionary of existing cards by ID for quick lookup
+    existing_dict = {card.id: card for card in existing_cards}
+    
+    # Build synced cards list
     synced_cards = []
     preserved_count = 0
     added_count = 0
-
-    for card in content_cards:
-        if card.id in progress_dict:
-            _merge_progress(card, progress_dict[card.id])
-            synced_cards.append(card)
+    
+    # Keep cards that exist in both (preserve metadata from JSON)
+    for card_id in text_ids:
+        if card_id in existing_dict:
+            # Card exists in both - preserve from JSON (has metadata)
+            synced_cards.append(existing_dict[card_id])
             preserved_count += 1
         else:
-            synced_cards.append(card)
+            # New card from text file
+            # Find the card from text_cards list
+            new_card = next(c for c in text_cards if c.id == card_id)
+            synced_cards.append(new_card)
             added_count += 1
-
-    removed_count = len(existing_ids - content_ids)
-    touched_cards = [card for card in synced_cards if has_progress(card)]
-    save_cards(touched_cards, deck_progress_path(deck_name), update_session_date=False)
-
+    
+    # Calculate removed count (cards in JSON but not in text file)
+    removed_count = len(existing_ids - text_ids)
+    
+    # Save synced cards
+    save_cards(synced_cards, json_path)
+    
     return preserved_count, added_count, removed_count
 
 
 def sync_all_decks():
-    """Sync all deck TSV files in data/decks/ with their progress files."""
+    """Sync all text files in data/ with their corresponding JSON files in data/decks/."""
     ensure_data_directory()
-
-    deck_files = get_deck_files()
-    if not deck_files:
-        print("No deck TSV files found in data/decks/.")
+    
+    text_files = get_text_files()
+    
+    if not text_files:
+        print("No text files found in data/ directory.")
         return
-
-    print("\nSyncing decks...")
-
+    
+    print("\nSyncing decks from text files...")
+    
     total_preserved = 0
     total_added = 0
     total_removed = 0
-
-    for deck_file in sorted(deck_files):
-        deck_name = get_deck_name_from_file(deck_file)
+    
+    for txt_file in sorted(text_files):
+        deck_name = get_deck_name_from_file(txt_file)
+        text_path = os.path.join("data", txt_file)
+        
         try:
-            preserved, added, removed = sync_deck(deck_name)
+            preserved, added, removed = sync_deck_from_text(text_path, deck_name)
+
             total_preserved += preserved
             total_added += added
             total_removed += removed
+            
         except Exception as e:
             print(f"\nError syncing {deck_name}: {e}")
             continue
-
+    
     print("Sync complete!")
     print(f"Total preserved: {total_preserved} cards")
     print(f"Total added: {total_added} cards")
@@ -297,31 +163,13 @@ def sync_all_decks():
 
 
 def get_last_session_date(filepath: str) -> Optional[str]:
-    """Get the last session date from a progress TSV file."""
-    deck_name = os.path.basename(filepath).replace(".tsv", "").replace(".json", "")
-    path = deck_progress_path(deck_name)
-
-    if not os.path.exists(path):
+    """Get the last session date from JSON file."""
+    if not os.path.exists(filepath):
         return None
-
+    
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            for line in f:
-                if line.startswith(SESSION_DATE_PREFIX):
-                    return line[len(SESSION_DATE_PREFIX) :].strip()
+        with open(filepath, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        return data.get("last_session_date")
     except Exception:
         return None
-
-    return None
-
-
-def load_legacy_json_cards(json_path: str) -> Tuple[List[Flashcard], Optional[str]]:
-    """Load cards from legacy JSON format (used by convert_decks.py)."""
-    if not os.path.exists(json_path):
-        return [], None
-
-    with open(json_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    cards = [Flashcard.from_dict(row) for row in data.get("cards", [])]
-    return cards, data.get("last_session_date")
