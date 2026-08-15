@@ -1,23 +1,4 @@
-earthquake
-el terremoto
-
-yellow
-amarillo
-
-to approach
-acercarse
-
-to reach
-alcanzar
-
-brown
-el marrón
-
-fruit
-la fruta
-
-alcohol
-el alcohol
+todos los demas
 
 mayor
 el alcalde
@@ -21493,15 +21474,6 @@ charlar
 to greet
 saludar
 
-mop
-el trapeador
-
-hero
-el héroe
-
-bib
-el babero
-
 left-handed
 zurdo
 
@@ -24909,4 +24881,3 @@ me late
 
 yes, for sure (MX informal)
 ¡ahuevo!
-
