@@ -4,6 +4,16 @@ Personal **Spanish flashcard CLI**. Python 3.11+, stdlib only.
 
 Run: `python main.py` → pick a deck → English prompt → reveal Spanish → rate 1–4.
 
+## The daily loop
+
+Chase keeps a running list of words and phrases in Google Keep during the day, then pastes
+it into Claude Code and runs `/vocab`. The skill translates each bullet and appends it to
+`data/spanish.txt`. Claude's whole job is that append. Review happens in the CLI, not here.
+
+The point of the repo is **learning to say the things he actually says** — not working
+through a generic vocab list. Something he wished he could say today should be memorized
+by tomorrow.
+
 ## Storage
 
 | What | Where | Editable? |
@@ -24,18 +34,26 @@ removes deleted cards.
 | `spaced_repetition.py` | Session-based SRS, queue prioritization |
 | `storage.py` | JSON load/save, sync txt ↔ json on startup |
 | `test_algorithm.py` | SRS logic tests |
+| `.claude/skills/vocab/` | The `/vocab` skill — bullets → cards |
 
-## Decks (`data/*.txt`)
+## Decks
+
+**Live — `data/`:**
 
 | Deck | Notes |
 |------|-------|
-| `spanish.txt` | Main vocab (~8000 cards) — English prompt → Spanish answer |
-| `verbs.txt` | Grammar construction example sentences (hand-maintained) |
-| `english.txt` | English vocab — minimal-swap paired sentences |
-| `mexican.txt` | Mexican food, culture, geography — English descriptions |
-| `DOP.txt` `numbers.txt` `jokes.txt` `flirt.txt` `chistes.txt` `slang.txt` `longphrases.txt` `lawsofpower.txt` | Side decks |
+| `spanish.txt` | The only active deck. English prompt → Spanish answer. Grown daily via `/vocab`. |
 
-Default card format:
+**Roadmap — `backlog/`.** These are parked, not deleted. Good material, but not phrases
+Chase says every day, so they don't earn deck slots yet. Promote one into `data/` when it
+becomes a priority, and teach `/vocab` its card direction at the same time.
+
+`english.txt` (English vocab, minimal-swap pairs) · `mexican.txt` (food, culture, geography)
+· `verbs.txt` (grammar construction sentences, hand-maintained) · `flirt.txt` · `chistes.txt`
+· `jokes.txt` · `slang.txt` · `DOP.txt` · `numbers.txt` · `longphrases.txt` ·
+`lawsofpower.txt` · a 284KB `spanish.txt` archive of the old bulk vocab list.
+
+Card format:
 
 ```
 English prompt
@@ -60,17 +78,21 @@ Ratings: 1=Hard, 2=Medium-Hard, 3=Medium, 4=Easy
 
 - **Context over grammar** — phrases and stories, not rule drills
 - **Personal over generic** — real people, family, Mexico trips, real stories
-- **Mexican Spanish** — natural MX choices, neutral register
-- **Keep the long vocab list** — `spanish.txt` is the main deck
+- **Mexico City Spanish** — prefer CDMX usage over neutral-textbook or Spain forms
+- **`tú` by default** — infer `usted` only from clear context; it's rare
+- **Minimal by design** — plain txt decks you can read and edit without being overwhelmed
 
 ## Conventions
 
 - **Extend content at the tail** of `data/*.txt`. Do not rewrite existing cards unless asked.
-- Deck-specific skills exist for authoring: `spanish`, `english`, `mexican`.
 - Windows PowerShell: chain with `;`, not `&&`.
 - Commit only when explicitly asked.
 
 ## Do not
 
 - Edit `data/decks/*.json` by hand
+- **Insert or reorder cards mid-file.** `parser.py` pairs consecutive non-empty lines from
+  the top and hashes `term|definition` for the card ID. An odd-line insertion re-pairs every
+  card below it, changes every ID, and silently wipes review progress for the whole deck.
+  Append at the tail, always in even line counts.
 - Bulk-rewrite register (tú/usted) on old cards without being asked
