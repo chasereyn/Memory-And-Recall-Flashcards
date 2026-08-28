@@ -10,6 +10,10 @@ Chase keeps a running list of words and phrases in Google Keep during the day, t
 it into Claude Code and runs `/vocab`. The skill translates each bullet and appends it to
 `data/spanish.txt`. Claude's whole job is that append. Review happens in the CLI, not here.
 
+`/vocab` **with nothing else** in the message is the other mode: pull 10 random unused pairs
+from the `backlog/spanish.txt` archive instead. For days with no list, or to keep folding the
+old bulk vocab back in a bite at a time.
+
 The point of the repo is **learning to say the things he actually says** — not working
 through a generic vocab list. Something he wished he could say today should be memorized
 by tomorrow.
@@ -35,6 +39,7 @@ removes deleted cards.
 | `storage.py` | JSON load/save, sync txt ↔ json on startup |
 | `test_algorithm.py` | SRS logic tests |
 | `.claude/skills/vocab/` | The `/vocab` skill — bullets → cards |
+| `.claude/skills/vocab/pull.py` | Backlog picker — samples unused pairs, enforces the tail-append rules |
 
 ## Decks
 
@@ -52,6 +57,14 @@ becomes a priority, and teach `/vocab` its card direction at the same time.
 · `verbs.txt` (grammar construction sentences, hand-maintained) · `flirt.txt` · `chistes.txt`
 · `jokes.txt` · `slang.txt` · `DOP.txt` · `numbers.txt` · `longphrases.txt` ·
 `lawsofpower.txt` · a 284KB `spanish.txt` archive of the old bulk vocab list.
+
+`backlog/spanish.txt` is special — it is the source for a bare `/vocab` pull, not a deck
+waiting to be promoted. It stays intact; pulled pairs are copied, never moved, and repeats
+are prevented by matching against the live deck.
+
+It once had a stray unpaired line at the top that shifted `parser.py`'s pairing for the whole
+file — fixed. `pull.py` reads it by blank-line-separated blocks and keeps only 2-line ones,
+so a future orphan would be skipped rather than silently mis-pairing everything after it.
 
 Card format:
 
