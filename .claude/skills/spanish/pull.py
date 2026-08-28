@@ -1,4 +1,4 @@
-"""Backlog picker for the /vocab skill.
+"""Backlog picker for the /spanish skill.
 
 Two subcommands:
   pick [N]   sample N unused pairs from backlog/spanish.txt, print as TSV

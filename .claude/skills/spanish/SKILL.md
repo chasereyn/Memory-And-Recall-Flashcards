@@ -1,9 +1,9 @@
 ---
-name: vocab
-description: Grow the Spanish deck. With a bullet list, translate each bullet into a card. Bare, with no list, pull 10 random unused pairs from the backlog archive. Use when the user invokes /vocab, pastes a "FLASHCARDS" list, or hands over words/phrases they want to learn in Spanish.
+name: spanish
+description: Grow the Spanish deck. With a bullet list, translate each bullet into a card. Bare, with no list, pull 10 random unused pairs from the backlog archive. Use when the user invokes /spanish, pastes a "FLASHCARDS" list, or hands over words/phrases they want to learn in Spanish.
 ---
 
-# vocab
+# spanish
 
 Append English→Spanish cards to the tail of `data/spanish.txt`, print what was added, stop.
 
@@ -13,9 +13,9 @@ This is a 30-second workflow. No preamble, no plan, no approval gate. Do the wor
 
 | Input | Mode |
 |---|---|
-| `/vocab` **alone**, nothing else in the message | **Backlog pull** — 10 random unused pairs from the archive |
-| `/vocab 20` alone | Backlog pull, 20 cards |
-| `/vocab` with a bullet list, or a pasted list | **Translate** — one card per bullet |
+| `/spanish` **alone**, nothing else in the message | **Backlog pull** — 10 random unused pairs from the archive |
+| `/spanish 20` alone | Backlog pull, 20 cards |
+| `/spanish` with a bullet list, or a pasted list | **Translate** — one card per bullet |
 
 If a message has any bullets at all, it is translate mode. Bare means bare.
 
@@ -59,7 +59,7 @@ direction as the live deck: English on top, Spanish below.
 Run the picker:
 
 ```
-python .claude/skills/vocab/pull.py pick 10
+python .claude/skills/spanish/pull.py pick 10
 ```
 
 It prints tab-separated pairs, already filtered against everything in `data/spanish.txt`
@@ -90,7 +90,7 @@ Only ever `data/spanish.txt`. Other decks live in `backlog/` and are out of scop
 Append with the picker, which enforces the file rules and re-checks duplicates:
 
 ```
-printf '%s\t%s\n' 'English prompt' 'Spanish answer' ... | python .claude/skills/vocab/pull.py append
+printf '%s\t%s\n' 'English prompt' 'Spanish answer' ... | python .claude/skills/spanish/pull.py append
 ```
 
 The rules it enforces, which apply to any hand edit too:
@@ -117,6 +117,6 @@ Do not commit. Offer to, in one line, at the end.
 
 ## Roadmap
 
-Only `data/spanish.txt` is in scope. Later the skill takes a deck name (`/vocab flirt`) for
+Only `data/spanish.txt` is in scope. Later the skill takes a deck name (`/spanish flirt`) for
 decks promoted out of `backlog/`. Adding one means adding its name and card direction here
 — not a redesign.
