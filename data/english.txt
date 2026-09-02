@@ -27,3 +27,36 @@ duplicity
 
 enthusiastic to an excessive, off-putting degree (adj)
 overzealous
+
+quiet and easily led, never putting up a fight (adj)
+docile
+
+describing a victory that cost so much it was not worth winning (adj)
+pyrrhic
+
+guided by what actually works rather than by theory or ideals (adj)
+pragmatic
+
+ugly and twisted in a way that unsettles you (adj)
+grotesque
+
+touching in a way that brings a pang of sadness (adj)
+poignant
+
+so ordinary and unoriginal that it is dull (adj)
+banal
+
+showy and colorful in a way meant to be noticed (adj)
+flamboyant
+
+a consuming hunger for wealth and possessions (n)
+avarice
+
+a cold looking-down on something you consider beneath you (n)
+disdain
+
+to seize someone and take them into custody (v)
+apprehend
+
+joking about something serious when it is not the moment for it (adj)
+facetious
