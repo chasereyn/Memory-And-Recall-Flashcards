@@ -85,4 +85,6 @@ every card after it, changes every ID, and silently wipes review progress for th
 A compact table of what was appended — word, definition — plus the count remaining on the
 list. Note any source typo you corrected.
 
-Do not commit. Offer to, in one line, at the end.
+Do not commit on your own. Offer it in one line at the end — and when the user says yes,
+**commit and push to the remote in the same step.** A yes to "commit?" is a yes to pushing;
+never leave the commit sitting local.

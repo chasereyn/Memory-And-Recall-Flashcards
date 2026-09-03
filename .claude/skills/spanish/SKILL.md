@@ -113,7 +113,9 @@ Print a compact table of what was appended — English, Spanish, and a short not
 one is genuinely useful (a register fix, a regional swap, a dropped pick). Then the batched
 questions, if any.
 
-Do not commit. Offer to, in one line, at the end.
+Do not commit on your own. Offer it in one line at the end — and when the user says yes,
+**commit and push to the remote in the same step.** A yes to "commit?" is a yes to pushing;
+never leave the commit sitting local.
 
 ## Roadmap
 
