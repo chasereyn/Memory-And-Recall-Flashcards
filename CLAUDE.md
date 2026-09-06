@@ -4,22 +4,47 @@ Personal **Spanish flashcard CLI**. Python 3.11+, stdlib only.
 
 Run: `python main.py` → pick a deck → English prompt → reveal Spanish → rate 1–4.
 
+## Why this repo exists
+
+Chase is 23, has a Mexican girlfriend, and has a lopsided problem: he **understands** spoken
+native Spanish at roughly 85%, and can barely **produce** a sentence. Years of classroom
+Spanish trained recognition — multiple choice, fill in the blank, translate this line — and
+every one of those gives you the answer's shape in advance. Listening does the same: the
+sound arrives and the brain only has to match it. Speaking gives you none of that. You start
+from nothing and have to build the word, the gender, the conjugation and the word order in
+about half a second.
+
+So the goal of this repo is narrow and specific: **sound fluent in everyday Mexico City
+conversation** with his girlfriend, her family, and their friends. Not pass a test. Not read
+a novel. Not name animals.
+
+Three consequences that should drive every decision here:
+
+- **Every card is a production drill.** The prompt is the cue, the answer is what has to come
+  out of his mouth. A card he silently recognizes and flips past has trained the one skill he
+  already has too much of. Cards are meant to be *said out loud*.
+- **Personal beats generic, always.** A phrase he wished he could say yesterday is worth more
+  than fifty words off a vocabulary list, because fluent speech is mostly prefabricated
+  chunks and the useful chunks are the ones his own life keeps demanding.
+- **Small beats complete.** This is a tool, not a place to live. It should stay something he
+  can read, edit, and finish in thirty minutes a day.
+
+There is deliberately no staging area, no parked-deck folder, and no bulk vocabulary archive
+to draw cards from. Lists like that are easy to find online and were the thing crowding out
+his review time — most of the words were ones he would never say. Do not build one, and do
+not bulk-import; see the warning under **Decks**.
+
 ## The daily loop
 
-Chase keeps a running list of words and phrases in Google Keep during the day, then pastes
-it into Claude Code and runs `/spanish`. The skill translates each bullet and appends it to
+Chase keeps a running list of words and phrases in Google Keep during the day, then pastes it
+into Claude Code and runs `/spanish`. The skill translates each bullet and appends it to
 `data/spanish.txt`. Claude's whole job is that append. Review happens in the CLI, not here.
 
-`/spanish` **with nothing else** in the message is the other mode: pull 10 random unused pairs
-from the `backlog/spanish.txt` archive instead. For days with no list, or to keep folding the
-old bulk vocab back in a bite at a time.
+`/spanish` only ever works from a list. There is no mode that invents cards or pulls them
+from a source file — that mode existed, and removing it was the point.
 
-`/english` is the same idea for the English deck, and only ever runs bare: it takes the next
-10 words off `backlog/english.txt`, writes a definition for each, and appends them.
-
-The point of the repo is **learning to say the things he actually says** — not working
-through a generic vocab list. Something he wished he could say today should be memorized
-by tomorrow.
+The loop only fills up if he is **attempting to speak**. The Keep list is downstream of the
+speaking habit, not a substitute for it.
 
 ## Storage
 
@@ -42,58 +67,33 @@ removes deleted cards.
 | `storage.py` | JSON load/save, sync txt ↔ json on startup |
 | `test_algorithm.py` | SRS logic tests |
 | `.claude/skills/spanish/` | The `/spanish` skill — bullets → cards |
-| `.claude/skills/spanish/pull.py` | Backlog picker — samples unused pairs, enforces the tail-append rules |
-| `.claude/skills/english/` | The `/english` skill — next 10 words → definition cards |
-| `.claude/skills/english/pick.py` | Word picker — next unused words, enforces the tail-append rules |
 
 ## Decks
 
-**Live — `data/`:**
+All decks live flat in `data/`. There is no parking lot and no archive.
 
-| Deck | Direction | Grown by |
-|------|-----------|----------|
-| `spanish.txt` | English prompt → Spanish answer | `/spanish` — daily bullets, or a bare pull from the archive |
-| `english.txt` | **Definition prompt → word answer** | `/english` — next 10 words off the list |
+| Deck | Cards | Direction | Grown by |
+|------|-------|-----------|----------|
+| `spanish.txt` | 51 | English prompt → Spanish answer | `/spanish` — his daily bullets. **The deck that matters.** |
+| `core.txt` | 400 | English prompt → Spanish answer | Fixed. The curated survivors of the old bulk archive. |
+| `mexican.txt` | 386 | English prompt → Spanish answer | Fixed. CDMX slang, flirting, and food/culture terms. |
+| `verbs.txt` | 370 | English prompt → Spanish answer | Hand-maintained. Grammar-construction sentences. |
+| `english.txt` | 89 | **Definition prompt → word answer** | Fixed. Vocabulary recall, unrelated to Spanish. |
 
-The two decks run in opposite directions on purpose. Spanish trains *producing the phrase*
-from an English cue. English trains *recalling the word* from its meaning, so the definition
-is on top and the word is the answer.
+`english.txt` runs the opposite direction on purpose: Spanish trains *producing the phrase*
+from an English cue, English trains *recalling the word* from its meaning, so the definition
+is on top and the word is the answer. It is no longer grown by a skill — the word queue that
+fed it is finished.
 
-**Roadmap — `backlog/`.** These are parked, not deleted. Good material, but not phrases
-Chase says every day, so they don't earn deck slots yet. Promote one into `data/` when it
-becomes a priority, and teach `/spanish` its card direction at the same time.
+`mexican.txt` folds in what used to be three files. Its food and culture cards were
+originally written Spanish-on-top as a glossary and were **flipped** during the merge, so the
+English description is the prompt and the Spanish term is the answer — same production
+direction as every other Spanish deck.
 
-`mexican.txt` (food, culture, geography) · `verbs.txt` (grammar construction sentences,
-hand-maintained) · `flirt.txt` · `chistes.txt` · `jokes.txt` · `slang.txt` · `DOP.txt` ·
-`numbers.txt` · `longphrases.txt` · `lawsofpower.txt`.
-
-**Two backlog files are sources, not parked decks.** They feed the skills and stay put:
-
-- `backlog/spanish.txt` — ~8300 pairs, the old bulk vocab list. Source for a bare `/spanish`.
-  **Copied from, never emptied.** It stays a full archive; repeats are prevented by matching
-  candidates against the live deck.
-- `backlog/english.txt` — a plain one-word-per-line list. Source for `/english`, which writes
-  the definitions. **A queue, not an archive** — a word is deleted from it once it becomes a
-  card, so the file drains as the deck fills. It used to hold minimal-swap pairs; that format
-  is gone, ignore it.
-
-Neither is waiting to be promoted into `data/`, and neither needs a cursor or state file —
-one tracks position by deleting, the other by comparing against the deck.
-
-`backlog/spanish.txt` once had a stray unpaired line at the top that shifted `parser.py`'s
-pairing for the whole file — fixed. Both pickers read their source by blank-line-separated
-blocks rather than by consecutive-line pairing, so a future orphan gets skipped instead of
-silently mis-pairing everything after it.
-
-Card format:
-
-```
-English prompt
-Spanish answer
-
-Next prompt
-Next answer
-```
+**Never bulk-add to a deck.** Every new card carries `next_review = None`, which means *due
+immediately*, and `get_cards_for_review` applies no daily cap — so dropping 500 cards into a
+deck produces a 500-card session that has to be cleared before the queue calms down. That is
+what killed the previous deck. Growth is ten or twenty cards a day off the Keep list.
 
 ## Review algorithm
 
@@ -113,12 +113,16 @@ Ratings: 1=Hard, 2=Medium-Hard, 3=Medium, 4=Easy
 - **Mexico City Spanish** — prefer CDMX usage over neutral-textbook or Spain forms
 - **`tú` by default** — infer `usted` only from clear context; it's rare
 - **Minimal by design** — plain txt decks you can read and edit without being overwhelmed
+- **Prefer a habit to a feature.** When something could be fixed either by changing how he
+  uses the tool or by adding code, lead with the habit. The learning happens out loud in his
+  life, not in the app.
 
 ## Conventions
 
 - **Extend content at the tail** of `data/*.txt`. Do not rewrite existing cards unless asked.
-- Windows PowerShell: chain with `;`, not `&&`.
-- Commit only when explicitly asked.
+- macOS, zsh, BSD userland. Chain with `&&`; `sed -i` needs an explicit argument (`sed -i ''`).
+- Commit only when explicitly asked — and a yes to the commit offer means **commit and push**
+  in the same step.
 
 ## Do not
 
@@ -128,3 +132,4 @@ Ratings: 1=Hard, 2=Medium-Hard, 3=Medium, 4=Easy
   card below it, changes every ID, and silently wipes review progress for the whole deck.
   Append at the tail, always in even line counts.
 - Bulk-rewrite register (tú/usted) on old cards without being asked
+- Bulk-import vocabulary lists, or rebuild an archive to pull cards from

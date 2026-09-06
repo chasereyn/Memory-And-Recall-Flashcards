@@ -60,3 +60,207 @@ apprehend
 
 joking about something serious when it is not the moment for it (adj)
 facetious
+
+happening by a lucky accident you were not looking for (adj)
+serendipitous
+
+deeply learned from years of reading and study (adj)
+erudite
+
+smooth, polished and at ease in sophisticated social settings (adj)
+urbane
+
+having plenty of money and the comfortable life it buys (adj)
+affluent
+
+the act of deliberately making someone believe something untrue (n)
+deceit
+
+forcing someone to act by using threats or pressure (n)
+coercion
+
+a lack of worldly experience that makes you trust too easily (n)
+naiveté
+
+the person who held your job or role before you did (n)
+predecessor
+
+bad in a way that stands out and shocks (adj)
+egregious
+
+found absolutely everywhere you look (adj)
+ubiquitous
+
+so angry you have gone past shouting (adj)
+livid
+
+so slight and thin that it barely holds together (adj)
+tenuous
+
+in a way that leaves no room at all for doubt (adv)
+unequivocally
+
+so good that it sets the standard for everyone else (adj)
+exemplary
+
+causing harm or damage to something (adj)
+detrimental
+
+stupid in a way that is genuinely irritating (adj)
+asinine
+
+the state of watching carefully for danger (n)
+vigilance
+
+the people with the power to settle a dispute or decide what counts (n)
+arbiters
+
+a small change that makes something better than it was (n)
+refinement
+
+to beat someone by being tactically cleverer (v)
+outmaneuver
+
+to forcibly hold something down and stop it from coming out (v)
+suppress
+
+to share something out again in a different way (v)
+redistribute
+
+the practice of keeping things hidden from others (n)
+secrecy
+
+deep and devout religious devotion (n)
+piety
+
+impossible to avoid no matter what you do (adj)
+inescapable
+
+to pretend to feel or have something you do not (v)
+feign
+
+able to be pressed into a new shape without breaking (adj)
+malleable
+
+not serious, and not worth spending time on (adj)
+frivolous
+
+done openly rather than hidden (adj)
+overt
+
+careful to say and do the right thing so nothing sensitive gets out (adj)
+discreet
+
+to formally grant an honor or gift to someone (v)
+bestow
+
+so unpleasant it deserves to be hated (adj)
+odious
+
+weak and lacking physical strength (adj)
+feeble
+
+so thrilling it leaves you breathless and buzzing (adj)
+exhilarating
+
+boring because it drags on and never varies (adj)
+tedious
+
+filled with a soaring happiness (adj)
+elated
+
+having a depth of meaning that stays with you (adj)
+profound
+
+belonging to the season of spring (adj)
+vernal
+
+thick with fresh green plant growth (adj)
+verdurous
+
+the process of growing young or staying youthful (n)
+juvenescence
+
+steadily growing warmer (adj)
+incalescent
+
+strongly scented with something, or strongly calling it to mind (adj)
+redolent
+
+having the pleasant, peaceful quality of the countryside (adj)
+bucolic
+
+belonging to the season of winter (adj)
+brumal
+
+one of the unpredictable ups and downs of life (n)
+vicissitude
+
+far more of something than you actually need (n)
+plethora
+
+to set two things next to each other so the contrast shows (v)
+juxtapose
+
+quick and eager to get started (adj)
+alacritous
+
+made up of many different hues at once (adj)
+polychromatic
+
+happiest in company and drawn to other people (adj)
+gregarious
+
+a disaster that causes serious damage or grief (n)
+calamity
+
+rotting, and foul to smell (adj)
+putrid
+
+to die down and become less intense (v)
+subside
+
+openly refusing to obey (adj)
+defiant
+
+to make a process happen faster (v)
+expedite
+
+unusually small in size (adj)
+diminutive
+
+something that absolutely must be done (n)
+imperative
+
+burning with intense feeling or belief (adj)
+fervent
+
+a person who is stupidly ignorant (n)
+ignoramus
+
+to strip someone of holdings, rights, or property (v)
+divest
+
+an official order issued by an authority (n)
+decree
+
+yielding to someone else's judgment out of respect (n)
+deference
+
+to use up a supply until little is left (v)
+deplete
+
+the sinking feeling when something goes wrong unexpectedly (n)
+dismay
+
+not noticeable enough to draw a second glance (adj)
+inconspicuous
+
+to make something impossible before it can happen (v)
+preclude
+
+indulging without restraint in comfort or pleasure (v)
+luxuriating
+
+second to last in a sequence (adj)
+penultimate
